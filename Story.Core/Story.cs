@@ -9,6 +9,8 @@
     {
         private readonly Stopwatch stopWatch;
         private readonly IRuleset<IStory, IStoryHandler> handlerProvider;
+        private readonly IStoryLog log;
+        private readonly IStoryData data;
 
         public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider) : base(Guid.NewGuid().ToString())
         {
@@ -19,27 +21,39 @@
 
             if (handlerProvider == null)
             {
-                throw new ArgumentNullException("handlerFactory");
+                throw new ArgumentNullException("handlerProvider");
             }
 
             this.handlerProvider = handlerProvider;
             this.stopWatch = Stopwatch.StartNew();
+            this.log = new StoryLog(this);
+            this.data = new StoryData(this);
 
-            this.Name = name;
-            this.Log = new StoryLog(this);
-            this.Data = new StoryData(this);
+            if (this.Parent == null)
+            {
+                this.Name = name;
+            }
+            else
+            {
+                this.Name = this.Parent.Name + "/" + name;
+            }
         }
 
         public string Name { get; private set; }
 
-        public string InstanceId
-        {
-            get { return base.InstanceId; }
-        }
-
-        public IStory Parent
+        public new IStory Parent
         {
             get { return (IStory)base.Parent; }
+        }
+
+        public IStoryData Data
+        {
+            get { return this.data; }
+        }
+
+        public IStoryLog Log
+        {
+            get { return this.log; }
         }
 
         public TimeSpan Elapsed { get { return this.stopWatch.Elapsed; } }
@@ -47,10 +61,6 @@
         public long ElapsedTicks { get { return this.stopWatch.ElapsedTicks; } }
 
         public long ElapsedMilliseconds { get { return this.stopWatch.ElapsedMilliseconds; } }
-
-        public IStoryData Data { get; private set; }
-
-        public IStoryLog Log { get; private set; }
 
         public void Start()
         {
