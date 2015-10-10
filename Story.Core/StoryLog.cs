@@ -57,13 +57,8 @@
 
         private void Log(LogSeverity severity, string format, params object[] args)
         {
-            this.entries.Add(new StoryLogEntry
-            {
-                Severity = severity,
-                Text = string.Format(format, args),
-                Offset = this.story.Elapsed,
-                DateTime = DateTime.UtcNow,
-            });
+            string text = args.Length > 0 ? string.Format(format, args) : format;
+            this.entries.Add(new StoryLogEntry(severity, text, this.story.Elapsed));
         }
     }
 }

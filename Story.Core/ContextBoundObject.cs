@@ -19,7 +19,7 @@
             {
                 throw new ArgumentException("instanceId");
             }
-            
+
             this.InstanceId = instanceId;
             this.Attach();
         }
@@ -46,15 +46,8 @@
                 // since ONLY HttpContext is migrated along with the request, not CallContext items.
                 //
                 // see: http://piers7.blogspot.com/2005/11/threadstatic-callcontext-and_02.html
-                
-                if (this.Parent != null)
-                {
-                    HttpContext.Current.Items[ContextKey] = this.Parent;
-                }
-                else
-                {
-                    HttpContext.Current.Items[ContextKey] = null;
-                }
+
+                HttpContext.Current.Items[ContextKey] = this.Parent;
             }
             else
             {
@@ -67,7 +60,7 @@
                     CallContext.FreeNamedDataSlot(ContextKey);
                 }
             }
-       
+
             this.Parent = null;
         }
 
@@ -83,9 +76,9 @@
                 // since ONLY HttpContext is migrated along with the request, not CallContext items.
                 //
                 // see: http://piers7.blogspot.com/2005/11/threadstatic-callcontext-and_02.html
-                
+
                 var existingContext = (ContextBoundObject<T>)HttpContext.Current.Items[ContextKey];
-                
+
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
@@ -96,7 +89,7 @@
             else
             {
                 var existingContext = (ContextBoundObject<T>)CallContext.LogicalGetData(ContextKey);
-                
+
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
