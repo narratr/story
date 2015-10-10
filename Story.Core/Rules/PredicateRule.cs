@@ -10,6 +10,16 @@
 
         public PredicateRule(Func<IStory, bool> predicate, Func<IStory, IStoryHandler> valueFactory)
         {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+
             this.predicate = predicate;
             this.valueFactory = valueFactory;
         }

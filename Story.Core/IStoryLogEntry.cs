@@ -21,7 +21,7 @@
         /// <summary>
         ///
         /// </summary>
-        TimeSpan Offset { get; }
+        TimeSpan Elapsed { get; }
 
         /// <summary>
         ///
