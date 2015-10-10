@@ -76,18 +76,31 @@
         [Test]
         public async Task story_data_is_observed_during_invocation()
         {
+            var data = new List<KeyValuePair<string, object>>()
+            {
+                new KeyValuePair<string, object>("bool_value", true),
+                new KeyValuePair<string, object>("int_value", 123),
+                new KeyValuePair<string, object>("string_value", "test!"),
+            };
+
             var handlerRules = new Ruleset<IStory, IStoryHandler>()
             {
                 Rules = {
-                    new PredicateRule(_ => true, _ => new ActionHandler(story => Assert.AreEqual(0, story.Data.Count()), (story, task) => Assert.AreEqual(3, story.Data.Count()))),
+                    new PredicateRule(
+                        _ => true,                                                              // always run for story
+                        _ => new ActionHandler(
+                            (story) => Assert.AreEqual(0, story.Data.Count()),                  // make sure OnStart() is invoked with zero data items.
+                            (story, task) => Assert.IsTrue(data.SequenceEqual(story.Data)))     // make sure OnStop() is invoked with 3 data items.
+                    ),
                 },
             };
 
             await new Story("testStory", handlerRules).Run(async story =>
             {
-                story.Data["bool_value"] = true;
-                story.Data["int_value"] = 123;
-                story.Data["string_value"] = "test!";
+                foreach (var kvp in data)
+                {
+                    story.Data[kvp.Key] = kvp.Value;
+                }
             });
         }
     }
