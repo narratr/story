@@ -14,28 +14,36 @@
 
         public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider) : base(Guid.NewGuid().ToString())
         {
-            if (string.IsNullOrEmpty(name))
+            try
             {
-                throw new ArgumentException("name");
-            }
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentException("name");
+                }
 
-            if (handlerProvider == null)
-            {
-                throw new ArgumentNullException("handlerProvider");
-            }
+                if (handlerProvider == null)
+                {
+                    throw new ArgumentNullException("handlerProvider");
+                }
 
-            this.handlerProvider = handlerProvider;
-            this.stopWatch = Stopwatch.StartNew();
-            this.log = new StoryLog(this);
-            this.data = new StoryData(this);
+                this.handlerProvider = handlerProvider;
+                this.stopWatch = Stopwatch.StartNew();
+                this.log = new StoryLog(this);
+                this.data = new StoryData(this);
 
-            if (this.Parent == null)
-            {
-                this.Name = name;
+                if (this.Parent == null)
+                {
+                    this.Name = name;
+                }
+                else
+                {
+                    this.Name = this.Parent.Name + "/" + name;
+                }
             }
-            else
+            catch
             {
-                this.Name = this.Parent.Name + "/" + name;
+                base.Detach();
+                throw;
             }
         }
 
@@ -64,16 +72,9 @@
 
         public void Start()
         {
-            try
+            foreach (var handler in this.handlerProvider.Fire(this))
             {
-                foreach (var handler in this.handlerProvider.Fire(this))
-                {
-                    handler.OnStart(this);
-                }
-            }
-            catch
-            {
-                throw;
+                handler.OnStart(this);
             }
         }
 
@@ -86,10 +87,30 @@
                     handler.OnStop(this, task);
                 }
             }
-            catch
+            finally
             {
-                throw;
+                base.Detach();
             }
+        }
+
+        public Task<T> Run<T>(Func<IStory, Task<T>> func)
+        {
+            this.Start();
+
+            Task<T> result = func(this);
+            result.ContinueWith(this.Stop, TaskContinuationOptions.ExecuteSynchronously);
+
+            return result;
+        }
+
+        public Task Run(Func<IStory, Task> func)
+        {
+            this.Start();
+
+            Task result = func(this);
+            result.ContinueWith(this.Stop, TaskContinuationOptions.ExecuteSynchronously);
+
+            return result;
         }
     }
 }

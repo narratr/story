@@ -27,5 +27,9 @@
         IStoryLog Log { get; }
 
         IStory Parent { get; }
+
+        Task<T> Run<T>(Func<IStory, Task<T>> func);
+
+        Task Run(Func<IStory, Task> func);
     }
 }

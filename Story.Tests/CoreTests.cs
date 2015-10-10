@@ -22,38 +22,14 @@
         [ExpectedException(typeof(ArgumentException))]
         public void story_name_cannot_be_null()
         {
-            Story story = null;
-
-            try
-            {
-                story = new Story(null, null);
-            }
-            finally
-            {
-                if (story != null)
-                {
-                    story.Detach();
-                }
-            }
+            var story = new Story(null, null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void story_handler_rules_cannot_be_null()
         {
-            Story story = null;
-
-            try
-            {
-                story = new Story("story", null);
-            }
-            finally
-            {
-                if (story != null)
-                {
-                    story.Detach();
-                }
-            }
+            var story = new Story("story", null);
         }
 
         [Test]
@@ -71,27 +47,28 @@
         }
 
         [Test]
-        public void story_name_is_chained_to_parent()
+        public async Task story_name_is_chained_to_parent()
         {
             var ruleset = new Ruleset<IStory, IStoryHandler>();
-            var baseStory = new Story("base", ruleset);
-            var childStory = new Story("child", ruleset);
-            
-            Assert.AreEqual("base/child", childStory.Name);
 
-            childStory.Detach();
-            baseStory.Detach();
+            await new Story("base", ruleset).Run(async baseStory =>
+            {
+                await new Story("child", ruleset).Run(async childStory =>
+                {
+                    Assert.AreEqual("base/child", childStory.Name);
+                });
+            });
         }
 
         [Test]
-        public void story_name_is_not_chained_to_null_parent()
+        public async Task story_name_is_not_chained_to_null_parent()
         {
             var ruleset = new Ruleset<IStory, IStoryHandler>();
-            var story = new Story("testStory", ruleset);
 
-            Assert.AreEqual("testStory", story.Name);
-
-            story.Detach();
+            await new Story("testStory", ruleset).Run(async story =>
+            {
+                Assert.AreEqual("testStory", story.Name);
+            });
         }
 
     }
