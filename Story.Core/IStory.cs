@@ -58,20 +58,5 @@
         /// Gets the story parent or null or this is a root story.
         /// </summary>
         IStory Parent { get; }
-
-        /// <summary>
-        /// Invokes the task to be observed by this story.
-        /// </summary>
-        /// <typeparam name="T">The task result type.</typeparam>
-        /// <param name="func">Function returning a task to observe.</param>
-        /// <returns>The task observed by this story.</returns>
-        Task<T> Run<T>(Func<IStory, Task<T>> func);
-
-        /// <summary>
-        /// Invokes the task to be observed by this story.
-        /// </summary>
-        /// <param name="func">Function returning a task to observe.</param>
-        /// <returns>The task observed by this story.</returns>
-        Task Run(Func<IStory, Task> func);
     }
 }

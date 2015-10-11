@@ -57,6 +57,7 @@
     <Compile Include="Rules\PredicateRule.cs" />
     <Compile Include="Story.cs" />
     <Compile Include="StoryData.cs" />
+    <Compile Include="StoryExtensions.cs" />
     <Compile Include="StoryLog.cs" />
     <Compile Include="StoryLogEntry.cs" />
   </ItemGroup>

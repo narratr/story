@@ -92,25 +92,5 @@
                 base.Detach();
             }
         }
-
-        public Task<T> Run<T>(Func<IStory, Task<T>> func)
-        {
-            this.Start();
-
-            Task<T> result = func(this);
-            result.ContinueWith(this.Stop, TaskContinuationOptions.ExecuteSynchronously);
-
-            return result;
-        }
-
-        public Task Run(Func<IStory, Task> func)
-        {
-            this.Start();
-
-            Task result = func(this);
-            result.ContinueWith(this.Stop, TaskContinuationOptions.ExecuteSynchronously);
-
-            return result;
-        }
     }
 }
