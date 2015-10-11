@@ -23,13 +23,13 @@
                 story.Start();
 
                 var result = func(story);
-                tcs.TrySetResult(result);
+                tcs.SetResult(result);
 
                 return result;
             }
             catch (Exception exception)
             {
-                tcs.TrySetException(exception);
+                tcs.SetException(exception);
                 throw;
             }
             finally
@@ -49,12 +49,13 @@
             try
             {
                 story.Start();
+
                 action(story);
-                tcs.TrySetResult(null);
+                tcs.SetResult(null);
             }
             catch (Exception exception)
             {
-                tcs.TrySetException(exception);
+                tcs.SetException(exception);
                 throw;
             }
             finally

@@ -49,13 +49,13 @@
         }
 
         [Test]
-        public async Task story_name_is_chained_to_parent()
+        public void story_name_is_chained_to_parent()
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
 
-            await new Story("base", handlerRules).Run(async baseStory =>
+            new Story("base", handlerRules).Run(baseStory =>
             {
-                await new Story("child", handlerRules).Run(async childStory =>
+                new Story("child", handlerRules).Run(childStory =>
                 {
                     Assert.AreEqual("base/child", childStory.Name);
                 });
@@ -63,18 +63,18 @@
         }
 
         [Test]
-        public async Task story_name_is_not_chained_to_null_parent()
+        public void story_name_is_not_chained_to_null_parent()
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
 
-            await new Story("testStory", handlerRules).Run(async story =>
+            new Story("testStory", handlerRules).Run(story =>
             {
                 Assert.AreEqual("testStory", story.Name);
             });
         }
 
         [Test]
-        public async Task story_data_is_observed_during_invocation()
+        public void story_data_is_observed_during_invocation()
         {
             var data = new List<KeyValuePair<string, object>>()
             {
@@ -95,12 +95,24 @@
                 },
             };
 
-            await new Story("testStory", handlerRules).Run(async story =>
+            new Story("testStory", handlerRules).Run(story =>
             {
                 foreach (var kvp in data)
                 {
                     story.Data[kvp.Key] = kvp.Value;
                 }
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void story_exception_thrown_is_propagated()
+        {
+            var handlerRules = new Ruleset<IStory, IStoryHandler>();
+
+            new Story("testStory", handlerRules).Run(story =>
+            {
+                throw new InvalidOperationException("oh oh");
             });
         }
     }
