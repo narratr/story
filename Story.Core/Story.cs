@@ -12,7 +12,7 @@
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
-        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider) : base(Guid.NewGuid().ToString())
+        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider)
         {
             try
             {

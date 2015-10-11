@@ -13,14 +13,9 @@
         /// Initializes a new instance of the <see cref="ContextBoundObject{T}"/> class.
         /// </summary>
         /// <param name="instanceId">The instance identifier.</param>
-        protected ContextBoundObject(string instanceId)
+        protected ContextBoundObject()
         {
-            if (string.IsNullOrEmpty(instanceId))
-            {
-                throw new ArgumentException("instanceId");
-            }
-
-            this.InstanceId = instanceId;
+            this.InstanceId = Guid.NewGuid().ToString();
             this.Attach();
         }
 
