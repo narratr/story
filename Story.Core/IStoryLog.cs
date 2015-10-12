@@ -17,5 +17,7 @@
         void Error(string format, params object[] args);
 
         void Critical(string format, params object[] args);
+
+		void Add(LogSeverity severity, string format, params object[] args);
     }
 }

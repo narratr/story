@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ContextBoundObject.cs" />
     <Compile Include="Handlers\ActionHandler.cs" />
+    <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="IRuleset.cs" />
     <Compile Include="IStory.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="StoryExtensions.cs" />
     <Compile Include="StoryLog.cs" />
     <Compile Include="StoryLogEntry.cs" />
+    <Compile Include="Utils\Ensure.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

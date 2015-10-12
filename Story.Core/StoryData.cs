@@ -4,6 +4,8 @@
     using System.Collections;
     using System.Collections.Generic;
 
+    using Utils;
+
     [Serializable]
     public class StoryData : IStoryData
     {
@@ -12,11 +14,7 @@
 
         public StoryData(IStory story)
         {
-            if (story == null)
-            {
-                throw new ArgumentNullException("story");
-            }
-
+			Ensure.ArgumentNotNull(story, "story");
             this.story = story;
         }
 
@@ -24,6 +22,8 @@
         {
             set
             {
+				Ensure.ArgumentNotEmpty(key, "key");
+
                 this.entries[key] = value;
                 this.story.Log.Debug("Added key '{0}' to data.", key);
             }

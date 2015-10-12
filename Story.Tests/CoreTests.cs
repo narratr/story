@@ -105,7 +105,7 @@
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(InvalidOperationException), ExpectedMessage ="oh oh")]
         public void story_exception_thrown_is_propagated()
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
@@ -114,6 +114,41 @@
             {
                 throw new InvalidOperationException("oh oh");
             });
+        }
+
+        [Test]
+        public void story_log_is_observed_during_invocation()
+        {
+            var log = new List<KeyValuePair<LogSeverity, string>>
+            {
+                new KeyValuePair<LogSeverity, string>( LogSeverity.Info, "test_info"),
+                new KeyValuePair<LogSeverity, string>( LogSeverity.Warning, "test_warning"),
+                new KeyValuePair<LogSeverity, string>( LogSeverity.Error, "test_error"),
+            };
+
+            var handlerRules = new Ruleset<IStory, IStoryHandler>()
+            {
+                Rules = {
+                    new PredicateRule(
+                        _ => true,                                                              // always run for story
+                        _ => new ActionHandler(
+                            (story) => Assert.AreEqual(0, story.Log.Count()),                   // make sure OnStart() is invoked with zero log items.
+                            (story, task) => Assert.IsTrue(story.Log.All(
+                                entry => log.Exists(
+                                    l => l.Key == entry.Severity &&
+                                    l.Value == entry.Text))))
+                    ),
+                },
+            };
+
+            new Story("testStory", handlerRules).Run(story =>
+            {
+                foreach (var kvp in log)
+                {
+                    story.Log.Add(kvp.Key, kvp.Value);
+                }
+            });
+
         }
     }
 }

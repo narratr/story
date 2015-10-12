@@ -4,6 +4,8 @@
     using System.Diagnostics;
     using System.Threading.Tasks;
 
+    using Utils;
+
     [Serializable]
     public class Story : ContextBoundObject<IStory>, IStory
     {
@@ -16,15 +18,8 @@
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
-                {
-                    throw new ArgumentException("name");
-                }
-
-                if (handlerProvider == null)
-                {
-                    throw new ArgumentNullException("handlerProvider");
-                }
+				Ensure.ArgumentNotEmpty(name, "name");
+				Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
 
                 this.handlerProvider = handlerProvider;
                 this.stopWatch = Stopwatch.StartNew();
