@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
 
     [Serializable]
-    public class Story : ContextBoundObject<Story>, IStory
+    public class Story : ContextBoundObject<IStory>, IStory
     {
         private readonly Stopwatch stopWatch;
         private readonly IRuleset<IStory, IStoryHandler> handlerProvider;

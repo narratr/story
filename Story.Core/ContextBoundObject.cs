@@ -5,7 +5,7 @@
     using System.Web;
 
     [Serializable]
-    public abstract class ContextBoundObject<T> where T : ContextBoundObject<T>
+    public abstract class ContextBoundObject<T>
     {
         public static string ContextKey = typeof(ContextBoundObject<T>).FullName + "_" + Guid.NewGuid();
 
@@ -37,11 +37,9 @@
             if (HttpContext.Current != null)
             {
                 // Use HttpContext to attach this object to since when using ASP.NET, requests can be migrated
-                // from the thread-pool to an internal queue and back and it will make us lose our context
-                // since ONLY HttpContext is migrated along with the request, not CallContext items.
+                // from the thread-pool to an internal queue and back and it will make us lose our context.
                 //
                 // see: http://piers7.blogspot.com/2005/11/threadstatic-callcontext-and_02.html
-
                 HttpContext.Current.Items[ContextKey] = this.Parent;
             }
             else
@@ -67,11 +65,9 @@
             if (HttpContext.Current != null)
             {
                 // Use HttpContext to attach this object to since when using ASP.NET, requests can be migrated
-                // from the thread-pool to an internal queue and back and it will make us lose our context
-                // since ONLY HttpContext is migrated along with the request, not CallContext items.
+                // from the thread-pool to an internal queue and back and it will make us lose our context.
                 //
                 // see: http://piers7.blogspot.com/2005/11/threadstatic-callcontext-and_02.html
-
                 var existingContext = (ContextBoundObject<T>)HttpContext.Current.Items[ContextKey];
 
                 if (existingContext != null)
