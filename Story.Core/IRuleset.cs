@@ -5,7 +5,7 @@
     using System.Linq;
 
     /// <summary>
-    ///
+    /// A set of rules.
     /// </summary>
     /// <typeparam name="TFact">The type of the fact.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -17,10 +17,10 @@
         ICollection<IRule<TFact, TResult>> Rules { get; }
 
         /// <summary>
-        /// Fires the specified fact.
+        /// Invokes the set of rules with the given fact as parameter.
         /// </summary>
         /// <param name="fact">The fact.</param>
-        /// <returns></returns>
+        /// <returns>A list of results from applicable rules.</returns>
         IEnumerable<TResult> Fire(TFact fact);
     }
 }

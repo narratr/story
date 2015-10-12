@@ -3,6 +3,9 @@
     using System;
     using System.Linq;
 
+    using Utils;
+
+    [Serializable]
     public class PredicateRule : IRule<IStory, IStoryHandler>
     {
         private readonly Func<IStory, bool> predicate;
@@ -10,15 +13,8 @@
 
         public PredicateRule(Func<IStory, bool> predicate, Func<IStory, IStoryHandler> valueFactory)
         {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException("predicate");
-            }
-
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
+            Ensure.ArgumentNotNull(predicate, "predicate");
+            Ensure.ArgumentNotNull(valueFactory, "valueFactory");
 
             this.predicate = predicate;
             this.valueFactory = valueFactory;

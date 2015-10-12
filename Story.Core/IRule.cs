@@ -1,7 +1,7 @@
 ﻿namespace Story.Core
 {
     /// <summary>
-    ///
+    /// A rule.
     /// </summary>
     /// <typeparam name="TFact">The type of the fact.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>

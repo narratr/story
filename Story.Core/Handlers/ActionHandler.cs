@@ -6,7 +6,7 @@
 
     using Utils;
 
-	[Serializable]
+    [Serializable]
     public class ActionHandler : IStoryHandler
     {
         private readonly Action<IStory> startAction;
