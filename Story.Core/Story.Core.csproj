@@ -58,6 +58,7 @@
     <Compile Include="IStoryProvider.cs" />
     <Compile Include="IStoryRulesetProvider.cs" />
     <Compile Include="Ruleset.cs" />
+    <Compile Include="Rules\MinimumSeverityRule.cs" />
     <Compile Include="Rules\PredicateRule.cs" />
     <Compile Include="Story.cs" />
     <Compile Include="StoryData.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="StoryLog.cs" />
     <Compile Include="StoryLogEntry.cs" />
     <Compile Include="Utils\Ensure.cs" />
+    <Compile Include="Utils\JsonExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -15,7 +15,9 @@ namespace Story.Core
             return new ContextStoryProvider(storyRulesetProvider ?? DefaultStoryRulesetProvider);
         }
 
-        public ContextStoryProvider(IStoryRulesetProvider storyRulesetProvider) : base(storyRulesetProvider) { }
+        public ContextStoryProvider(IStoryRulesetProvider storyRulesetProvider) : base(storyRulesetProvider)
+        {
+        }
 
         public bool UseParentRulesetProvider { get; set; }
 
@@ -80,22 +82,6 @@ namespace Story.Core
             }
         }
 
-        long IStory.ElapsedTicks
-        {
-            get
-            {
-                return CurrentStory.ElapsedTicks;
-            }
-        }
-
-        long IStory.ElapsedMilliseconds
-        {
-            get
-            {
-                return CurrentStory.ElapsedMilliseconds;
-            }
-        }
-
         IStoryData IStory.Data
         {
             get
@@ -128,43 +114,27 @@ namespace Story.Core
             }
         }
 
-        private IStory GetCurrentStory()
+        DateTime IStory.StartDateTime
         {
-            var story = Story.FromContext() as IStory;
-            if (story != null)
+            get
             {
-                return story;
+                return DateTime.MinValue;
             }
-
-            // When there is no story in the context there are 2 options:
-            // 1. Return a story that does nothing and trace a warning
-            // 2. Return a story that after a single usage calls the story handlers
-
-            // var stackTrace = new StackTrace(1);
-            // Trace.TraceWarning("No story in context, caller call stack is {0}", stackTrace);
-            // return new DummyStory();
-
-            return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
         }
 
         void IStory.Start()
         {
-            throw new NotImplementedException();
         }
 
         void IStory.Stop(Task task)
         {
-            throw new NotImplementedException();
         }
-
 
         /// <summary>
         /// One time story will invoke handlers immediately after a single use of either the log or data
         /// </summary>
         private class OneTimeStory : IStory
         {
-            // the reason for wrapping these interfaces instead of inheritance
-            // is to make sure interface changes are reflected and handled
             private readonly IStoryLog log;
             private readonly IStoryData data;
 
@@ -173,6 +143,7 @@ namespace Story.Core
                 this.log = new OneTimeStoryLog(this);
                 this.data = new OneTimeStoryData(this);
                 this.HandlerProvider = handlerProvider;
+                this.StartDateTime = DateTime.UtcNow;
             }
 
             public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
@@ -182,22 +153,6 @@ namespace Story.Core
                 get
                 {
                     return TimeSpan.Zero;
-                }
-            }
-
-            public long ElapsedMilliseconds
-            {
-                get
-                {
-                    return 0;
-                }
-            }
-
-            public long ElapsedTicks
-            {
-                get
-                {
-                    return 0;
                 }
             }
 
@@ -235,6 +190,8 @@ namespace Story.Core
                 }
             }
 
+            public DateTime StartDateTime { get; private set; }
+
             private void InvokeHandlers()
             {
                 foreach (var handler in this.HandlerProvider.Fire(this))
@@ -253,7 +210,9 @@ namespace Story.Core
 
             private class OneTimeStoryLog : StoryLog
             {
-                public OneTimeStoryLog(OneTimeStory story) : base(story) { }
+                public OneTimeStoryLog(OneTimeStory story) : base(story)
+                {
+                }
 
                 public override void Add(LogSeverity severity, string format, params object[] args)
                 {
@@ -264,7 +223,9 @@ namespace Story.Core
 
             private class OneTimeStoryData : StoryData
             {
-                public OneTimeStoryData(OneTimeStory story) : base(story) { }
+                public OneTimeStoryData(OneTimeStory story) : base(story)
+                {
+                }
 
                 public override object this[string key]
                 {
@@ -295,22 +256,6 @@ namespace Story.Core
                 get
                 {
                     return TimeSpan.Zero;
-                }
-            }
-
-            public long ElapsedMilliseconds
-            {
-                get
-                {
-                    return 0;
-                }
-            }
-
-            public long ElapsedTicks
-            {
-                get
-                {
-                    return 0;
                 }
             }
 
@@ -351,6 +296,14 @@ namespace Story.Core
                 get
                 {
                     return null;
+                }
+            }
+
+            public DateTime StartDateTime
+            {
+                get
+                {
+                    return DateTime.MinValue;
                 }
             }
 

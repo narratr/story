@@ -1,11 +1,8 @@
 ﻿namespace Story.Core
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Reflection;
     using System.Threading.Tasks;
 
     using Utils;
@@ -21,8 +18,8 @@
         {
             try
             {
-				Ensure.ArgumentNotEmpty(name, "name");
-				Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
+                Ensure.ArgumentNotEmpty(name, "name");
+                Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
 
                 this.HandlerProvider = handlerProvider;
                 this.stopWatch = new Stopwatch();
@@ -66,12 +63,11 @@
 
         public TimeSpan Elapsed { get { return this.stopWatch.Elapsed; } }
 
-        public long ElapsedTicks { get { return this.stopWatch.ElapsedTicks; } }
-
-        public long ElapsedMilliseconds { get { return this.stopWatch.ElapsedMilliseconds; } }
+        public DateTime StartDateTime { get; private set; }
 
         public void Start()
         {
+            this.StartDateTime = DateTime.UtcNow;
             this.stopWatch.Start();
 
             foreach (var handler in this.HandlerProvider.Fire(this))
