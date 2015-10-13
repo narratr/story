@@ -5,11 +5,12 @@ namespace Story.Core
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ContextStoryProvider : BasicStoryProvider
+    public class ContextStoryProvider : BasicStoryProvider, IStory
     {
         public static IStoryRulesetProvider DefaultStoryRulesetProvider { get; set; }
 
-        public static ContextStoryProvider GetStoryProvider(IStoryRulesetProvider storyRulesetProvider = null)
+        // TODO: name
+        public static IStory GetUpdatedCurrentStory(IStoryRulesetProvider storyRulesetProvider = null)
         {
             return new ContextStoryProvider(storyRulesetProvider ?? DefaultStoryRulesetProvider);
         }
@@ -55,6 +56,78 @@ namespace Story.Core
             }
         }
 
+        string IStory.Name
+        {
+            get
+            {
+                return CurrentStory.Name;
+            }
+        }
+
+        string IStory.InstanceId
+        {
+            get
+            {
+                return CurrentStory.InstanceId;
+            }
+        }
+
+        TimeSpan IStory.Elapsed
+        {
+            get
+            {
+                return CurrentStory.Elapsed;
+            }
+        }
+
+        long IStory.ElapsedTicks
+        {
+            get
+            {
+                return CurrentStory.ElapsedTicks;
+            }
+        }
+
+        long IStory.ElapsedMilliseconds
+        {
+            get
+            {
+                return CurrentStory.ElapsedMilliseconds;
+            }
+        }
+
+        IStoryData IStory.Data
+        {
+            get
+            {
+                return CurrentStory.Data;
+            }
+        }
+
+        IStoryLog IStory.Log
+        {
+            get
+            {
+                return CurrentStory.Log;
+            }
+        }
+
+        IStory IStory.Parent
+        {
+            get
+            {
+                return CurrentStory.Parent;
+            }
+        }
+
+        IRuleset<IStory, IStoryHandler> IStory.HandlerProvider
+        {
+            get
+            {
+                return CurrentStory.HandlerProvider;
+            }
+        }
+
         private IStory GetCurrentStory()
         {
             var story = Story.FromContext() as IStory;
@@ -73,6 +146,17 @@ namespace Story.Core
 
             return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
         }
+
+        void IStory.Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IStory.Stop(Task task)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// One time story will invoke handlers immediately after a single use of either the log or data
