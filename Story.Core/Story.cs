@@ -14,7 +14,6 @@
     public class Story : ContextBoundObject<IStory>, IStory
     {
         private readonly Stopwatch stopWatch;
-        private readonly IRuleset<IStory, IStoryHandler> handlerProvider;
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
@@ -25,7 +24,7 @@
 				Ensure.ArgumentNotEmpty(name, "name");
 				Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
 
-                this.handlerProvider = handlerProvider;
+                this.HandlerProvider = handlerProvider;
                 this.stopWatch = new Stopwatch();
                 this.log = new StoryLog(this);
                 this.data = new StoryData(this);
@@ -47,6 +46,8 @@
         }
 
         public string Name { get; private set; }
+
+        public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
 
         public new IStory Parent
         {
@@ -73,7 +74,7 @@
         {
             this.stopWatch.Start();
 
-            foreach (var handler in this.handlerProvider.Fire(this))
+            foreach (var handler in this.HandlerProvider.Fire(this))
             {
                 handler.OnStart(this);
             }
@@ -85,7 +86,7 @@
 
             try
             {
-                foreach (var handler in this.handlerProvider.Fire(this))
+                foreach (var handler in this.HandlerProvider.Fire(this))
                 {
                     handler.OnStop(this, task);
                 }

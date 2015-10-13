@@ -16,7 +16,7 @@ namespace Story.Core
 
         public IStoryRulesetProvider StoryRulesetProvider { get; set; }
 
-        public IStory CreateStory(string name)
+        public virtual IStory CreateStory(string name)
         {
             return new Story(name, StoryRulesetProvider.GetRuleset());
         }

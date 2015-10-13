@@ -58,5 +58,7 @@
         /// Gets the story parent or null or this is a root story.
         /// </summary>
         IStory Parent { get; }
+
+        IRuleset<IStory, IStoryHandler> HandlerProvider { get; }
     }
 }

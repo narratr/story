@@ -7,7 +7,7 @@ namespace Story.Core
 
     public class ContextStoryProvider : BasicStoryProvider
     {
-        public static BasicStoryRulesetProvider DefaultStoryRulesetProvider { get; set; }
+        public static IStoryRulesetProvider DefaultStoryRulesetProvider { get; set; }
 
         public static ContextStoryProvider GetStoryProvider(IStoryRulesetProvider storyRulesetProvider = null)
         {
@@ -15,6 +15,22 @@ namespace Story.Core
         }
 
         public ContextStoryProvider(IStoryRulesetProvider storyRulesetProvider) : base(storyRulesetProvider) { }
+
+        public bool UseParentRulesetProvider { get; set; }
+
+        public override IStory CreateStory(string name)
+        {
+            if (UseParentRulesetProvider)
+            {
+                var story = Story.FromContext() as IStory;
+                if (story != null)
+                {
+                    return new Story(name, story.HandlerProvider);
+                }
+            }
+
+            return base.CreateStory(name);
+        }
 
         public IStory CurrentStory
         {
@@ -63,8 +79,6 @@ namespace Story.Core
         /// </summary>
         private class OneTimeStory : IStory
         {
-            private readonly IRuleset<IStory, IStoryHandler> handlerProvider;
-
             // the reason for wrapping these interfaces instead of inheritance
             // is to make sure interface changes are reflected and handled
             private readonly IStoryLog log;
@@ -74,8 +88,10 @@ namespace Story.Core
             {
                 this.log = new OneTimeStoryLog(this);
                 this.data = new OneTimeStoryData(this);
-                this.handlerProvider = handlerProvider;
+                this.HandlerProvider = handlerProvider;
             }
+
+            public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
 
             public TimeSpan Elapsed
             {
@@ -137,7 +153,7 @@ namespace Story.Core
 
             private void InvokeHandlers()
             {
-                foreach (var handler in this.handlerProvider.Fire(this))
+                foreach (var handler in this.HandlerProvider.Fire(this))
                 {
                     handler.OnStop(this, Task.FromResult(true));
                 }
@@ -235,6 +251,14 @@ namespace Story.Core
                 get
                 {
                     return String.Empty;
+                }
+            }
+
+            public IRuleset<IStory, IStoryHandler> HandlerProvider
+            {
+                get
+                {
+                    return null;
                 }
             }
 
