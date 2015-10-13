@@ -117,6 +117,60 @@
         }
 
         [Test]
+        public void story_handler_is_invoked_when_rule_condition_is_met()
+        {
+            var invokedBefore = false;
+            var invokedAfter = false;
+
+            var handlerRules = new Ruleset<IStory, IStoryHandler>()
+            {
+                Rules =  {
+                    new PredicateRule(story =>
+                    {
+                        var userId = (string)story.Data["userId"];
+                        return userId != null && userId == "user13";
+                    },
+                    _ => new ActionHandler(s => invokedBefore = true, (s, task) => invokedAfter = true)),
+                }
+            };
+
+            var testStory = new Story("testStory", handlerRules);
+            testStory.Data["userId"] = "user13";
+
+            testStory.Run(story => {});
+
+            Assert.IsTrue(invokedBefore);
+            Assert.IsTrue(invokedAfter);
+        }
+
+        [Test]
+        public void story_handler_is_not_invoked_when_rule_condition_is_not_met()
+        {
+            var invokedBefore = false;
+            var invokedAfter = false;
+
+            var handlerRules = new Ruleset<IStory, IStoryHandler>()
+            {
+                Rules =  {
+                    new PredicateRule(story =>
+                    {
+                        var userId = (string)story.Data["userId"];
+                        return userId != null && userId == "user13";
+                    },
+                    _ => new ActionHandler(s => invokedBefore = true, (s, task) => invokedAfter = true)),
+                }
+            };
+
+            var testStory = new Story("testStory", handlerRules);
+            testStory.Data["userId"] = "user21";
+
+            testStory.Run(story => { });
+
+            Assert.IsFalse(invokedBefore);
+            Assert.IsFalse(invokedAfter);
+        }
+
+        [Test]
         public void story_log_is_observed_during_invocation()
         {
             var log = new List<KeyValuePair<LogSeverity, string>>

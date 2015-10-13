@@ -8,6 +8,6 @@
 
     public interface IStoryData : IEnumerable<KeyValuePair<string, object>>
     {
-        object this[string key] { set; }
+        object this[string key] { get; set; }
     }
 }

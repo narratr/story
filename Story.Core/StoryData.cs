@@ -14,15 +14,23 @@
 
         public StoryData(IStory story)
         {
-			Ensure.ArgumentNotNull(story, "story");
+            Ensure.ArgumentNotNull(story, "story");
             this.story = story;
         }
 
         public object this[string key]
         {
+            get
+            {
+                Ensure.ArgumentNotEmpty(key, "key");
+
+                object result;
+                return this.entries.TryGetValue(key, out result) ? result : null;
+            }
+
             set
             {
-				Ensure.ArgumentNotEmpty(key, "key");
+                Ensure.ArgumentNotEmpty(key, "key");
 
                 this.entries[key] = value;
                 this.story.Log.Debug("Added key '{0}' to data.", key);

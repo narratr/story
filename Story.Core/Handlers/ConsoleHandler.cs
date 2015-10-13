@@ -31,7 +31,7 @@
                     continue;
                 }
 
-                var formatted = string.Format("{0}|{1}|{2}|{3}|{4}", entry.DateTime, entry.Severity, entry.Elapsed, entry.Text);
+                var formatted = string.Format("{0}|{1}|{2}|{3}", entry.DateTime, entry.Severity, entry.Elapsed, entry.Text);
                 System.Console.WriteLine(formatted);
             }
         }
