@@ -1,7 +1,11 @@
 ﻿namespace Story.Core
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     using Utils;
@@ -22,7 +26,7 @@
 				Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
 
                 this.handlerProvider = handlerProvider;
-                this.stopWatch = Stopwatch.StartNew();
+                this.stopWatch = new Stopwatch();
                 this.log = new StoryLog(this);
                 this.data = new StoryData(this);
 
@@ -67,6 +71,8 @@
 
         public void Start()
         {
+            this.stopWatch.Start();
+
             foreach (var handler in this.handlerProvider.Fire(this))
             {
                 handler.OnStart(this);
@@ -75,6 +81,8 @@
 
         public void Stop(Task task)
         {
+            this.stopWatch.Stop();
+
             try
             {
                 foreach (var handler in this.handlerProvider.Fire(this))

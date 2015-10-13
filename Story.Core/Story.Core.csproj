@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextBoundObject.cs" />
+    <Compile Include="ContextStoryProvider.cs" />
     <Compile Include="Handlers\ActionHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="IRule.cs" />
@@ -54,6 +55,8 @@
     <Compile Include="IStoryHandler.cs" />
     <Compile Include="IStoryLog.cs" />
     <Compile Include="IStoryLogEntry.cs" />
+    <Compile Include="IStoryProvider.cs" />
+    <Compile Include="IStoryRulesetProvider.cs" />
     <Compile Include="Ruleset.cs" />
     <Compile Include="Rules\PredicateRule.cs" />
     <Compile Include="Story.cs" />
