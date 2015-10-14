@@ -5,37 +5,23 @@ namespace Story.Core
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class ContextStoryProvider : BasicStoryProvider, IStory
+    // TODO: name
+    public class ContextStory : IStory
     {
-        public static IStoryRulesetProvider DefaultStoryRulesetProvider { get; set; }
+        private readonly bool ignoreEmptyStory;
+
+        private ContextStory(bool ignoreEmptyStory)
+        {
+            this.ignoreEmptyStory = ignoreEmptyStory;
+        }
 
         // TODO: name
-        public static IStory GetUpdatedCurrentStory(IStoryRulesetProvider storyRulesetProvider = null)
+        public static IStory GetUpdatedCurrentStory(bool ignoreEmptyStory = false)
         {
-            return new ContextStoryProvider(storyRulesetProvider ?? DefaultStoryRulesetProvider);
+            return new ContextStory(ignoreEmptyStory);
         }
 
-        public ContextStoryProvider(IStoryRulesetProvider storyRulesetProvider) : base(storyRulesetProvider)
-        {
-        }
-
-        public bool UseParentRulesetProvider { get; set; }
-
-        public override IStory CreateStory(string name)
-        {
-            if (UseParentRulesetProvider)
-            {
-                var story = Story.FromContext() as IStory;
-                if (story != null)
-                {
-                    return new Story(name, story.HandlerProvider);
-                }
-            }
-
-            return base.CreateStory(name);
-        }
-
-        public IStory CurrentStory
+        private IStory CurrentStory
         {
             get
             {
@@ -46,15 +32,23 @@ namespace Story.Core
                     return story;
                 }
 
-                // When there is no story in the context there are 2 options:
+                // When there is no story in the context there are 3 options:
                 // 1. Return a story that does nothing and trace a warning
                 // 2. Return a story that after a single usage calls the story handlers
+                // 3. Fail
 
                 // var stackTrace = new StackTrace(1);
                 // Trace.TraceWarning("No story in context, caller call stack is {0}", stackTrace);
                 // return new DummyStory();
 
-                return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
+                // return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
+
+                if (!this.ignoreEmptyStory)
+                {
+                    throw new InvalidOperationException("No story in context");
+                }
+
+                return new DummyStory();
             }
         }
 
@@ -124,118 +118,12 @@ namespace Story.Core
 
         void IStory.Start()
         {
+            throw new InvalidOperationException("Context story should not invoke Start");
         }
 
         void IStory.Stop(Task task)
         {
-        }
-
-        /// <summary>
-        /// One time story will invoke handlers immediately after a single use of either the log or data
-        /// </summary>
-        private class OneTimeStory : IStory
-        {
-            private readonly IStoryLog log;
-            private readonly IStoryData data;
-
-            public OneTimeStory(IRuleset<IStory, IStoryHandler> handlerProvider)
-            {
-                this.log = new OneTimeStoryLog(this);
-                this.data = new OneTimeStoryData(this);
-                this.HandlerProvider = handlerProvider;
-                this.StartDateTime = DateTime.UtcNow;
-            }
-
-            public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
-
-            public TimeSpan Elapsed
-            {
-                get
-                {
-                    return TimeSpan.Zero;
-                }
-            }
-
-            public string InstanceId
-            {
-                get
-                {
-                    return String.Empty;
-                }
-            }
-
-            public IStoryData Data
-            {
-                get { return this.data; }
-            }
-
-            public IStoryLog Log
-            {
-                get { return this.log; }
-            }
-
-            public string Name
-            {
-                get
-                {
-                    return null;
-                }
-            }
-
-            public IStory Parent
-            {
-                get
-                {
-                    return null;
-                }
-            }
-
-            public DateTime StartDateTime { get; private set; }
-
-            private void InvokeHandlers()
-            {
-                foreach (var handler in this.HandlerProvider.Fire(this))
-                {
-                    handler.OnStop(this, Task.FromResult(true));
-                }
-            }
-
-            public void Start()
-            {
-            }
-
-            public void Stop(Task task)
-            {
-            }
-
-            private class OneTimeStoryLog : StoryLog
-            {
-                public OneTimeStoryLog(OneTimeStory story) : base(story)
-                {
-                }
-
-                public override void Add(LogSeverity severity, string format, params object[] args)
-                {
-                    base.Add(severity, format, args);
-                    ((OneTimeStory)Story).InvokeHandlers();
-                }
-            }
-
-            private class OneTimeStoryData : StoryData
-            {
-                public OneTimeStoryData(OneTimeStory story) : base(story)
-                {
-                }
-
-                public override object this[string key]
-                {
-                    set
-                    {
-                        base[key] = value;
-                        ((OneTimeStory)Story).InvokeHandlers();
-                    }
-                }
-            }
+            throw new InvalidOperationException("Context story should not invoke Stop");
         }
 
         private class DummyStory : IStory

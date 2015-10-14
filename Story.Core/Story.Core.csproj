@@ -45,9 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextBoundObject.cs" />
-    <Compile Include="ContextStoryProvider.cs" />
+    <Compile Include="ContextStory.cs" />
     <Compile Include="Handlers\ActionHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
+    <Compile Include="Handlers\IStoryFormatter.cs" />
+    <Compile Include="Handlers\TraceHandler.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="IRuleset.cs" />
     <Compile Include="IStory.cs" />

@@ -1,19 +1,16 @@
-﻿namespace Story.Core.Handlers
+namespace Story.Core.Handlers
 {
     using System;
+    using System.Diagnostics;
     using System.Threading.Tasks;
-
     using Utils;
 
     [Serializable]
-    public class ConsoleHandler : IStoryHandler
+    public class TraceHandler : IStoryHandler
     {
-        public static readonly IStoryHandler DefaultConsoleHandler = new ConsoleHandler();
-        public static readonly IStoryHandler BasicConsoleHandler = new ConsoleHandler(new BasicStoryFormatter());
-
         private readonly IStoryFormatter storyFormatter;
 
-        public ConsoleHandler(IStoryFormatter storyFormatter = null)
+        public TraceHandler(IStoryFormatter storyFormatter = null)
         {
             this.storyFormatter = storyFormatter ?? new DelimiterStoryFormatter(LogSeverity.Debug);
         }
@@ -28,7 +25,7 @@
             Ensure.ArgumentNotNull(task, "task");
 
             string str = this.storyFormatter.FormatStory(story);
-            Console.WriteLine(str);
+            Trace.TraceInformation(str);
         }
     }
 }
