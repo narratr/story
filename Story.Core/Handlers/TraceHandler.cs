@@ -5,24 +5,21 @@ namespace Story.Core.Handlers
     using Utils;
 
     [Serializable]
-    public class TraceHandler : IStoryHandler
+    public class TraceHandler : StoryHandlerBase
     {
         private readonly IStoryFormatter storyFormatter;
 
-        public TraceHandler(IStoryFormatter storyFormatter = null)
+        public TraceHandler(string name, IStoryFormatter storyFormatter = null)
+            : base(name)
         {
-            this.storyFormatter = storyFormatter ?? new DelimiterStoryFormatter(LogSeverity.Debug);
+            this.storyFormatter = storyFormatter ?? StoryFormatters.DelimiterStoryFormatter;
         }
 
-        public void OnStart(IStory story)
-        {
-        }
-
-        public virtual void OnStop(IStory story)
+        public override void OnStop(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
 
-            string str = this.storyFormatter.FormatStory(story);
+            string str = this.storyFormatter.FormatStory(story, this.Name);
             Trace.TraceInformation(str);
         }
     }

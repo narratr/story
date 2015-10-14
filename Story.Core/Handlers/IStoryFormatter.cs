@@ -5,15 +5,15 @@ namespace Story.Core.Handlers
 {
     public interface IStoryFormatter
     {
-        string FormatStory(IStory story);
+        string FormatStory(IStory story, string handlerName);
     }
 
     public class BasicStoryFormatter : IStoryFormatter
     {
-        public string FormatStory(IStory story)
+        public string FormatStory(IStory story, string handlerName)
         {
             StringBuilder str = new StringBuilder();
-            str.AppendFormat("{0}\n  Story {1} took {2} ms\n", story.StartDateTime, story.Name, story.Elapsed.TotalMilliseconds);
+            str.AppendFormat("{0}\n  Story {1} ({2}) on rule {3} took {4} ms\n", story.StartDateTime, story.Name, story.InstanceId, handlerName, story.Elapsed.TotalMilliseconds);
 
             foreach (var item in story.Data)
             {
@@ -42,7 +42,7 @@ namespace Story.Core.Handlers
             this.severityThreshold = LogSeverity.Debug;
         }
 
-        public string FormatStory(IStory story)
+        public string FormatStory(IStory story, string handlerName)
         {
             StringBuilder str = new StringBuilder();
 

@@ -6,11 +6,12 @@ using System.Reactive.Subjects;
 
 namespace Story.Core.Handlers
 {
-    public abstract class BufferedHandler : IStoryHandler
+    public abstract class BufferedHandler : StoryHandlerBase
     {
         private readonly Subject<IStory> _storiesSubject;
 
-        public BufferedHandler(TimeSpan timeDelay, int batchSize)
+        public BufferedHandler(string name, TimeSpan timeDelay, int batchSize)
+            : base(name)
         {
             _storiesSubject = new Subject<IStory>();
             _storiesSubject.Buffer(timeDelay, batchSize)
@@ -25,11 +26,7 @@ namespace Story.Core.Handlers
             throw new InvalidOperationException("subject should never complete");
         }
 
-        public virtual void OnStart(IStory story)
-        {
-        }
-
-        public void OnStop(IStory story)
+        public override void OnStop(IStory story)
         {
             _storiesSubject.OnNext(story);
         }
