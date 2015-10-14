@@ -1,9 +1,7 @@
 ﻿namespace Story.Core
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     public interface IStory
@@ -35,14 +33,9 @@
         TimeSpan Elapsed { get; }
 
         /// <summary>
-        /// Gets the elapsed ticks.
+        /// Gets the start date time.
         /// </summary>
-        long ElapsedTicks { get; }
-
-        /// <summary>
-        /// Gets the elapsed milliseconds.
-        /// </summary>
-        long ElapsedMilliseconds { get; }
+        DateTime StartDateTime { get; }
 
         /// <summary>
         /// Gets the story data.
@@ -58,5 +51,7 @@
         /// Gets the story parent or null or this is a root story.
         /// </summary>
         IStory Parent { get; }
+
+        IRuleset<IStory, IStoryHandler> HandlerProvider { get; }
     }
 }

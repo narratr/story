@@ -10,15 +10,16 @@
     public class StoryData : IStoryData
     {
         private readonly Dictionary<string, object> entries = new Dictionary<string, object>();
-        private readonly IStory story;
 
         public StoryData(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
-            this.story = story;
+            this.Story = story;
         }
 
-        public object this[string key]
+        protected IStory Story { get; private set; }
+
+        public virtual object this[string key]
         {
             get
             {
@@ -33,7 +34,7 @@
                 Ensure.ArgumentNotEmpty(key, "key");
 
                 this.entries[key] = value;
-                this.story.Log.Debug("Added key '{0}' to data.", key);
+                this.Story.Log.Debug("Added key '{0}' to data.", key);
             }
         }
 

@@ -10,13 +10,14 @@
     public class StoryLog : IStoryLog
     {
         private readonly List<IStoryLogEntry> entries = new List<IStoryLogEntry>();
-        private readonly IStory story;
 
         public StoryLog(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
-            this.story = story;
+            this.Story = story;
         }
+
+        protected IStory Story { get; private set; }
 
         public void Debug(string format, params object[] args)
         {
@@ -43,10 +44,10 @@
             this.Add(LogSeverity.Critical, format, args);
         }
 		
-        public void Add(LogSeverity severity, string format, params object[] args)
+        public virtual void Add(LogSeverity severity, string format, params object[] args)
         {
             string text = args.Length > 0 ? string.Format(format, args) : format;
-            this.entries.Add(new StoryLogEntry(severity, text, this.story.Elapsed));
+            this.entries.Add(new StoryLogEntry(severity, text, this.Story.Elapsed));
         }
 
         IEnumerator<IStoryLogEntry> IEnumerable<IStoryLogEntry>.GetEnumerator()

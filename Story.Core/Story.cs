@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Utils;
@@ -10,7 +11,6 @@
     public class Story : ContextBoundObject<IStory>, IStory
     {
         private readonly Stopwatch stopWatch;
-        private readonly IRuleset<IStory, IStoryHandler> handlerProvider;
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
@@ -18,11 +18,11 @@
         {
             try
             {
-				Ensure.ArgumentNotEmpty(name, "name");
-				Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
+                Ensure.ArgumentNotEmpty(name, "name");
+                Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
 
-                this.handlerProvider = handlerProvider;
-                this.stopWatch = Stopwatch.StartNew();
+                this.HandlerProvider = handlerProvider;
+                this.stopWatch = new Stopwatch();
                 this.log = new StoryLog(this);
                 this.data = new StoryData(this);
 
@@ -44,6 +44,8 @@
 
         public string Name { get; private set; }
 
+        public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
+
         public new IStory Parent
         {
             get { return (IStory)base.Parent; }
@@ -61,13 +63,14 @@
 
         public TimeSpan Elapsed { get { return this.stopWatch.Elapsed; } }
 
-        public long ElapsedTicks { get { return this.stopWatch.ElapsedTicks; } }
-
-        public long ElapsedMilliseconds { get { return this.stopWatch.ElapsedMilliseconds; } }
+        public DateTime StartDateTime { get; private set; }
 
         public void Start()
         {
-            foreach (var handler in this.handlerProvider.Fire(this))
+            this.StartDateTime = DateTime.UtcNow;
+            this.stopWatch.Start();
+
+            foreach (var handler in this.HandlerProvider.Fire(this))
             {
                 handler.OnStart(this);
             }
@@ -75,9 +78,11 @@
 
         public void Stop(Task task)
         {
+            this.stopWatch.Stop();
+
             try
             {
-                foreach (var handler in this.handlerProvider.Fire(this))
+                foreach (var handler in this.HandlerProvider.Fire(this))
                 {
                     handler.OnStop(this, task);
                 }

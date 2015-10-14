@@ -89,5 +89,23 @@
                 CallContext.LogicalSetData(ContextKey, this);
             }
         }
+
+        public static ContextBoundObject<T> FromContext()
+        {
+            if (HttpContext.Current != null)
+            {
+                // Use HttpContext to attach this object to since when using ASP.NET, requests can be migrated
+                // from the thread-pool to an internal queue and back and it will make us lose our context
+                // since ONLY HttpContext is migrated along with the request, not CallContext items.
+                //
+                // see: http://piers7.blogspot.com/2005/11/threadstatic-callcontext-and_02.html
+
+                return (ContextBoundObject<T>)HttpContext.Current.Items[ContextKey];
+            }
+            else
+            {
+                return (ContextBoundObject<T>)CallContext.LogicalGetData(ContextKey);
+            }
+        }
     }
 }
