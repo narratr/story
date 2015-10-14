@@ -1,7 +1,6 @@
 ﻿namespace Story.Core.Handlers
 {
     using System;
-    using System.Threading.Tasks;
 
     using Utils;
 
@@ -22,10 +21,9 @@
         {
         }
 
-        public virtual void OnStop(IStory story, Task task)
+        public virtual void OnStop(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
-            Ensure.ArgumentNotNull(task, "task");
 
             string str = this.storyFormatter.FormatStory(story);
             Console.WriteLine(str);

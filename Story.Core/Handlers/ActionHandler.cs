@@ -2,7 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Utils;
 
@@ -10,14 +9,14 @@
     public class ActionHandler : IStoryHandler
     {
         private readonly Action<IStory> startAction;
-        private readonly Action<IStory, Task> stopAction;
+        private readonly Action<IStory> stopAction;
 
-        public ActionHandler(Action<IStory, Task> stopAction)
+        public ActionHandler(Action<IStory> stopAction)
             : this(null, stopAction)
         {
         }
 
-        public ActionHandler(Action<IStory> startAction, Action<IStory, Task> stopAction)
+        public ActionHandler(Action<IStory> startAction, Action<IStory> stopAction)
         {
             this.startAction = startAction;
             this.stopAction = stopAction;
@@ -33,14 +32,13 @@
             }
         }
 
-        public void OnStop(IStory story, Task task)
+        public void OnStop(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
-            Ensure.ArgumentNotNull(task, "task");
 
             if (this.stopAction != null)
             {
-                this.stopAction(story, task);
+                this.stopAction(story);
             }
         }
     }

@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Utils;
 
@@ -76,7 +75,7 @@
             }
         }
 
-        public void Stop(Task task)
+        public void Stop()
         {
             this.stopWatch.Stop();
 
@@ -84,7 +83,7 @@
             {
                 foreach (var handler in this.HandlerProvider.Fire(this))
                 {
-                    handler.OnStop(this, task);
+                    handler.OnStop(this);
                 }
             }
             finally
