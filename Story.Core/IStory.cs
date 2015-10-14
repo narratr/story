@@ -2,7 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
 
     public interface IStory
     {
@@ -24,8 +23,7 @@
         /// <summary>
         /// Stops this story and invokes the stop handlers.
         /// </summary>
-        /// <param name="task">The task wrapped by this story.</param>
-        void Stop(Task task);
+        void Stop();
 
         /// <summary>
         /// Gets the elapsed time-span.

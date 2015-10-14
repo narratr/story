@@ -49,6 +49,8 @@
     <Compile Include="Handlers\ActionHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="Handlers\IStoryFormatter.cs" />
+    <Compile Include="Handlers\StoryFormatters.cs" />
+    <Compile Include="Handlers\StoryHandlerBase.cs" />
     <Compile Include="Handlers\TraceHandler.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="IRuleset.cs" />

@@ -1,9 +1,8 @@
 ﻿namespace Story.Core
 {
+    using global::Story.Core.Utils;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     public static class StoryExtensions
@@ -44,23 +43,20 @@
         /// <param name="action">Action to observe.</param>
         public static void Run(this IStory story, Action<IStory> action)
         {
-            var tcs = new TaskCompletionSource<object>();
-
             try
             {
                 story.Start();
 
                 action(story);
-                tcs.SetResult(null);
             }
             catch (Exception exception)
             {
-                tcs.SetException(exception);
+                story.Data["exception"] = exception;
                 throw;
             }
             finally
             {
-                story.Stop(tcs.Task);
+                story.Stop();
             }
         }
 
@@ -75,6 +71,7 @@
             story.Start();
 
             Task<T> result = func(story);
+            story.Data["task"] = result;
             result.ContinueWith(story.Stop, TaskContinuationOptions.ExecuteSynchronously);
 
             return result;
@@ -93,6 +90,19 @@
             result.ContinueWith(story.Stop, TaskContinuationOptions.ExecuteSynchronously);
 
             return result;
+        }
+
+        private static void Stop(this IStory story, Task task)
+        {
+            Ensure.ArgumentNotNull(task, "task");
+
+            story.Data["task"] = task;
+            if (task.IsFaulted)
+            {
+                story.Data["exception"] = task.Exception;
+            }
+
+            story.Stop();
         }
     }
 }

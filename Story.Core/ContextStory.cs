@@ -3,7 +3,6 @@ namespace Story.Core
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     // TODO: name
     public class ContextStory : IStory
@@ -121,7 +120,7 @@ namespace Story.Core
             throw new InvalidOperationException("Context story should not invoke Start");
         }
 
-        void IStory.Stop(Task task)
+        void IStory.Stop()
         {
             throw new InvalidOperationException("Context story should not invoke Stop");
         }
@@ -199,7 +198,7 @@ namespace Story.Core
             {
             }
 
-            public void Stop(Task task)
+            public void Stop()
             {
             }
 
