@@ -15,6 +15,9 @@
         /// <returns>The result.</returns>
         public static T Run<T>(this IStory story, Func<IStory, T> func)
         {
+            Ensure.ArgumentNotNull(story, "story");
+            Ensure.ArgumentNotNull(func, "func");
+
             var tcs = new TaskCompletionSource<T>();
 
             try
@@ -43,6 +46,9 @@
         /// <param name="action">Action to observe.</param>
         public static void Run(this IStory story, Action<IStory> action)
         {
+            Ensure.ArgumentNotNull(story, "story");
+            Ensure.ArgumentNotNull(action, "action");
+
             try
             {
                 story.Start();
@@ -68,6 +74,9 @@
         /// <returns>The task observed by this story.</returns>
         public static Task<T> RunAsync<T>(this IStory story, Func<IStory, Task<T>> func)
         {
+            Ensure.ArgumentNotNull(story, "story");
+            Ensure.ArgumentNotNull(func, "func");
+
             story.Start();
 
             Task<T> result = func(story);
@@ -84,6 +93,9 @@
         /// <returns>The task observed by this story.</returns>
         public static Task RunAsync(this IStory story, Func<IStory, Task> func)
         {
+            Ensure.ArgumentNotNull(story, "story");
+            Ensure.ArgumentNotNull(func, "func");
+
             story.Start();
 
             Task result = func(story);
@@ -94,14 +106,10 @@
 
         private static void Stop(this IStory story, Task task)
         {
+            Ensure.ArgumentNotNull(story, "story");
             Ensure.ArgumentNotNull(task, "task");
 
-            story.Data["task"] = task;
-            if (task.IsFaulted)
-            {
-                story.Data["exception"] = task.Exception;
-            }
-
+            story.Task = task;
             story.Stop();
         }
     }

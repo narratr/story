@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public interface IStory
     {
@@ -14,6 +15,11 @@
         /// Gets the instance identifier of the story.
         /// </summary>
         string InstanceId { get; }
+
+        /// <summary>
+        /// Gets or sets the task observed by this story.
+        /// </summary>
+        Task Task { get; set; }
 
         /// <summary>
         /// Starts this story and invokes the start handlers.
@@ -50,6 +56,9 @@
         /// </summary>
         IStory Parent { get; }
 
+        /// <summary>
+        /// Gets the story handler provider.
+        /// </summary>
         IRuleset<IStory, IStoryHandler> HandlerProvider { get; }
     }
 }

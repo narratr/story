@@ -87,10 +87,11 @@
             {
                 Rules = {
                     new PredicateRule(
-                        _ => true,                                                              // always run for story
+                        _ => true,                                                        // always run for story
                         _ => new ActionHandler(
-                            (story) => Assert.AreEqual(0, story.Data.Count()),                  // make sure OnStart() is invoked with zero data items.
-                            (story, task) => Assert.IsTrue(data.SequenceEqual(story.Data)))     // make sure OnStop() is invoked with 3 data items.
+                            "data_verification_handler",
+                            (story) => Assert.AreEqual(0, story.Data.Count()),            // make sure OnStart() is invoked with zero data items.
+                            (story) => Assert.IsTrue(data.SequenceEqual(story.Data)))     // make sure OnStop() is invoked with 3 data items.
                     ),
                 },
             };
@@ -130,7 +131,7 @@
                         var userId = (string)story.Data["userId"];
                         return userId != null && userId == "user13";
                     },
-                    _ => new ActionHandler(s => invokedBefore = true, (s, task) => invokedAfter = true)),
+                    _ => new ActionHandler("invocation_handler", s => invokedBefore = true, s => invokedAfter = true)),
                 }
             };
 
@@ -157,7 +158,7 @@
                         var userId = (string)story.Data["userId"];
                         return userId != null && userId == "user13";
                     },
-                    _ => new ActionHandler(s => invokedBefore = true, (s, task) => invokedAfter = true)),
+                    _ => new ActionHandler("invocation_handler", s => invokedBefore = true, s => invokedAfter = true)),
                 }
             };
 
@@ -186,8 +187,9 @@
                     new PredicateRule(
                         _ => true,                                                              // always run for story
                         _ => new ActionHandler(
+                            "data_verification_handler",
                             (story) => Assert.AreEqual(0, story.Log.Count()),                   // make sure OnStart() is invoked with zero log items.
-                            (story, task) => Assert.IsTrue(story.Log.All(
+                            (story) => Assert.IsTrue(story.Log.All(
                                 entry => log.Exists(
                                     l => l.Key == entry.Severity &&
                                     l.Value == entry.Text))))

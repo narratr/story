@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Utils;
 
@@ -41,9 +42,17 @@
             }
         }
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get;
+            private set;
+        }
 
-        public IRuleset<IStory, IStoryHandler> HandlerProvider { get; private set; }
+        public IRuleset<IStory, IStoryHandler> HandlerProvider
+        {
+            get;
+            private set;
+        }
 
         public new IStory Parent
         {
@@ -60,9 +69,22 @@
             get { return this.log; }
         }
 
-        public TimeSpan Elapsed { get { return this.stopWatch.Elapsed; } }
+        public TimeSpan Elapsed
+        {
+            get { return this.stopWatch.Elapsed; }
+        }
 
-        public DateTime StartDateTime { get; private set; }
+        public DateTime StartDateTime
+        {
+            get;
+            private set;
+        }
+
+        public Task Task
+        {
+            get;
+            set;
+        }
 
         public void Start()
         {

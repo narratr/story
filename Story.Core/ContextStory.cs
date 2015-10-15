@@ -3,6 +3,7 @@ namespace Story.Core
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     // TODO: name
     public class ContextStory : IStory
@@ -49,6 +50,12 @@ namespace Story.Core
 
                 return new DummyStory();
             }
+        }
+
+        Task IStory.Task
+        {
+            get;
+            set;
         }
 
         string IStory.Name
@@ -193,6 +200,8 @@ namespace Story.Core
                     return DateTime.MinValue;
                 }
             }
+
+            public Task Task { get; set; }
 
             public void Start()
             {
