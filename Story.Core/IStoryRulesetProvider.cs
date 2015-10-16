@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace Story.Core
 {
     public interface IStoryRulesetProvider
@@ -7,7 +10,7 @@ namespace Story.Core
 
     public class BasicStoryRulesetProvider : IStoryRulesetProvider
     {
-        private IRuleset<IStory, IStoryHandler> ruleset;
+        private readonly IRuleset<IStory, IStoryHandler> ruleset;
 
         public BasicStoryRulesetProvider(IRuleset<IStory, IStoryHandler> ruleset)
         {

@@ -3,7 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-
+    using System.Globalization;
     using Utils;
 
     [Serializable]
@@ -32,6 +32,11 @@
             set
             {
                 Ensure.ArgumentNotEmpty(key, "key");
+
+                if (this.entries.ContainsKey(key))
+                {
+                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, "Data already has key [{0}] with value", key));
+                }
 
                 this.entries[key] = value;
                 this.Story.Log.Debug("Added key '{0}' to data.", key);
