@@ -19,9 +19,9 @@
         string Text { get; }
 
         /// <summary>
-        /// Time elapsed since Story was started.
+        /// Date and Time of log entry.
         /// </summary>
-        TimeSpan Elapsed { get; }
+        DateTime DateTime { get; }
     }
 
     public enum LogSeverity

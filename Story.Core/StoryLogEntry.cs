@@ -5,15 +5,15 @@
     [Serializable]
     public class StoryLogEntry : IStoryLogEntry
     {
-        private readonly TimeSpan elapsed;
+        private readonly DateTime dateTime;
         private readonly LogSeverity severity;
         private readonly string text;
 
-        public StoryLogEntry(LogSeverity severity, string text, TimeSpan elapsed)
+        public StoryLogEntry(LogSeverity severity, string text)
         {
+            this.dateTime = DateTime.UtcNow;
             this.severity = severity;
             this.text = text;
-            this.elapsed = elapsed;
         }
 
         public LogSeverity Severity
@@ -26,9 +26,9 @@
             get { return this.text; }
         }
 
-        public TimeSpan Elapsed
+        public DateTime DateTime
         {
-            get { return this.elapsed; }
+            get { return this.dateTime; }
         }
     }
 }
