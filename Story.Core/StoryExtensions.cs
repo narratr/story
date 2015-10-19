@@ -104,6 +104,46 @@
             return result;
         }
 
+        /// <summary>
+        /// Write to the log of the story with debug log severity
+        /// </summary>
+        public static void Debug(this IStory story, string format, params object[] args)
+        {
+            story.Log.Debug(format, args);
+        }
+
+        /// <summary>
+        /// Write to the log of the story with information log severity
+        /// </summary>
+        public static void Info(this IStory story, string format, params object[] args)
+        {
+            story.Log.Info(format, args);
+        }
+
+        /// <summary>
+        /// Write to the log of the story with warning log severity
+        /// </summary>
+        public static void Warn(this IStory story, string format, params object[] args)
+        {
+            story.Log.Warn(format, args);
+        }
+
+        /// <summary>
+        /// Write to the log of the story with error log severity
+        /// </summary>
+        public static void Error(this IStory story, string format, params object[] args)
+        {
+            story.Log.Error(format, args);
+        }
+
+        /// <summary>
+        /// Write to the log of the story with critical log severity
+        /// </summary>
+        public static void Critical(this IStory story, string format, params object[] args)
+        {
+            story.Log.Critical(format, args);
+        }
+
         private static void Stop(this IStory story, Task task)
         {
             Ensure.ArgumentNotNull(story, "story");
