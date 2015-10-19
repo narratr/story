@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Story.Core
 {
     public interface IStoryProvider
@@ -5,6 +7,14 @@ namespace Story.Core
         IStoryRulesetProvider StoryRulesetProvider { get; }
 
         IStory CreateStory(string name);
+    }
+
+    public static class StoryProviderExtensions
+    {
+        public static IStory CreateStory(this IStoryProvider storyProvider, [CallerMemberName]string name = "")
+        {
+            return storyProvider.CreateStory(name);
+        }
     }
 
     public class BasicStoryProvider : IStoryProvider

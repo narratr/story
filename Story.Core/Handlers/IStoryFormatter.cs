@@ -15,7 +15,7 @@ namespace Story.Core.Handlers
             StringBuilder str = new StringBuilder();
             str.AppendFormat("{0}\n  Story {1} ({2}) on rule {3} took {4} ms\n", story.StartDateTime, story.Name, story.InstanceId, handlerName, story.Elapsed.TotalMilliseconds);
 
-            foreach (var item in story.Data)
+            foreach (var item in story.GetData())
             {
                 if (item.Value != null)
                 {
@@ -24,9 +24,9 @@ namespace Story.Core.Handlers
             }
             str.Append('\n');
 
-            foreach (var line in story.Log)
+            foreach (var line in story.GetLogs())
             {
-                str.AppendFormat("  +{0} ms {1} {2}\n", line.Elapsed.TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
+                str.AppendFormat("  +{0} ms {1} {2}\n", (line.DateTime - story.StartDateTime).TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
             }
 
             return str.ToString();
@@ -46,14 +46,14 @@ namespace Story.Core.Handlers
         {
             StringBuilder str = new StringBuilder();
 
-            foreach (var entry in story.Log)
+            foreach (var entry in story.GetLogs())
             {
                 if (entry.Severity < this.severityThreshold)
                 {
                     continue;
                 }
 
-                str.AppendFormat("{0}|{1}|{2}|{3}\n", (story.StartDateTime + entry.Elapsed), entry.Severity, entry.Elapsed, entry.Text);
+                str.AppendFormat("{0}|{1}|{2}|{3}\n", entry.DateTime, entry.Severity, (entry.DateTime - story.StartDateTime), entry.Text);
             }
 
             return str.ToString();
