@@ -26,7 +26,7 @@ namespace Story.Core.Handlers
 
             foreach (var line in story.Log)
             {
-                str.AppendFormat("  +{0} ms {1} {2}\n", (line.DateTime - story.StartDateTime).TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
+                str.AppendFormat("  +{0} ms {1} {2}\n", line.Elapsed.TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
             }
 
             return str.ToString();
@@ -53,7 +53,7 @@ namespace Story.Core.Handlers
                     continue;
                 }
 
-                str.AppendFormat("{0}|{1}|{2}|{3}\n", entry.DateTime, entry.Severity, entry.Elapsed, entry.Text);
+                str.AppendFormat("{0}|{1}|{2}|{3}\n", (story.StartDateTime + entry.Elapsed), entry.Severity, entry.Elapsed, entry.Text);
             }
 
             return str.ToString();

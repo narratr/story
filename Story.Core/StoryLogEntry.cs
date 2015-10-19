@@ -8,14 +8,12 @@
         private readonly TimeSpan elapsed;
         private readonly LogSeverity severity;
         private readonly string text;
-        private readonly DateTime dateTime;
 
         public StoryLogEntry(LogSeverity severity, string text, TimeSpan elapsed)
         {
             this.severity = severity;
             this.text = text;
             this.elapsed = elapsed;
-            this.dateTime = DateTime.UtcNow;
         }
 
         public LogSeverity Severity
@@ -31,11 +29,6 @@
         public TimeSpan Elapsed
         {
             get { return this.elapsed; }
-        }
-
-        public DateTime DateTime
-        {
-            get { return this.dateTime; }
         }
     }
 }

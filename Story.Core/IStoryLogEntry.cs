@@ -22,11 +22,6 @@
         /// Time elapsed since Story was started.
         /// </summary>
         TimeSpan Elapsed { get; }
-
-        /// <summary>
-        /// Date and Time of log entry.
-        /// </summary>
-        DateTime DateTime { get; }
     }
 
     public enum LogSeverity
