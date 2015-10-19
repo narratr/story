@@ -1,6 +1,7 @@
 ﻿namespace Story.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -55,6 +56,11 @@
         /// Gets the story parent or null or this is a root story.
         /// </summary>
         IStory Parent { get; }
+
+        /// <summary>
+        /// Gets the children.
+        /// </summary>
+        IEnumerable<IStory> Children { get; }
 
         /// <summary>
         /// Gets the story handler provider.

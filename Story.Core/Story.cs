@@ -1,6 +1,7 @@
 ﻿namespace Story.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
@@ -8,7 +9,7 @@
     using Utils;
 
     [Serializable]
-    public class Story : ContextBoundObject<IStory>, IStory
+    public class Story : ContextBoundObject<Story>, IStory
     {
         private readonly Stopwatch stopWatch;
         private readonly IStoryLog log;
@@ -57,6 +58,11 @@
         public new IStory Parent
         {
             get { return (IStory)base.Parent; }
+        }
+
+        public new IEnumerable<IStory> Children
+        {
+            get { return (IEnumerable<IStory>)base.Children; }
         }
 
         public IStoryData Data

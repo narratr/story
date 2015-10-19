@@ -1,13 +1,18 @@
 ﻿namespace Story.Core
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Runtime.Remoting.Messaging;
     using System.Web;
 
     [Serializable]
-    public abstract class ContextBoundObject<T>
+    public abstract class ContextBoundObject<T> where T : ContextBoundObject<T>
     {
         public static string ContextKey = typeof(ContextBoundObject<T>).FullName + "_" + Guid.NewGuid();
+
+        private ConcurrentBag<T> _childrenBag = new ConcurrentBag<T>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextBoundObject{T}"/> class.
@@ -28,6 +33,17 @@
         /// Gets the parent.
         /// </summary>
         public ContextBoundObject<T> Parent { get; private set; }
+
+        /// <summary>
+        /// Gets the children.
+        /// </summary>
+        public IEnumerable<T> Children
+        {
+            get
+            {
+                return _childrenBag;
+            }
+        }
 
         /// <summary>
         /// Detaches this instance.
@@ -73,6 +89,7 @@
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
+                    this.Parent._childrenBag.Add(this as T);
                 }
 
                 HttpContext.Current.Items[ContextKey] = this;
@@ -84,6 +101,7 @@
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
+                    this.Parent._childrenBag.Add(this as T);
                 }
 
                 CallContext.LogicalSetData(ContextKey, this);

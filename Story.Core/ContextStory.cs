@@ -106,6 +106,14 @@ namespace Story.Core
             }
         }
 
+        IEnumerable<IStory> IStory.Children
+        {
+            get
+            {
+                return CurrentStory.Children;
+            }
+        }
+
         IRuleset<IStory, IStoryHandler> IStory.HandlerProvider
         {
             get
@@ -186,6 +194,14 @@ namespace Story.Core
             }
 
             public IStory Parent
+            {
+                get
+                {
+                    return null;
+                }
+            }
+
+            public IEnumerable<IStory> Children
             {
                 get
                 {
