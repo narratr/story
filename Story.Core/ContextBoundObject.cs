@@ -8,11 +8,11 @@
     using System.Web;
 
     [Serializable]
-    public abstract class ContextBoundObject<T> where T : ContextBoundObject<T>
+    public abstract class ContextBoundObject<T>
     {
         public static string ContextKey = typeof(ContextBoundObject<T>).FullName + "_" + Guid.NewGuid();
 
-        private ConcurrentBag<T> _childrenBag = new ConcurrentBag<T>();
+        private ConcurrentBag<ContextBoundObject<T>> _childrenBag = new ConcurrentBag<ContextBoundObject<T>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextBoundObject{T}"/> class.
@@ -37,7 +37,7 @@
         /// <summary>
         /// Gets the children.
         /// </summary>
-        public IEnumerable<T> Children
+        public IEnumerable<ContextBoundObject<T>> Children
         {
             get
             {
@@ -89,7 +89,7 @@
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
-                    this.Parent._childrenBag.Add(this as T);
+                    this.Parent._childrenBag.Add(this);
                 }
 
                 HttpContext.Current.Items[ContextKey] = this;
@@ -101,7 +101,7 @@
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
-                    this.Parent._childrenBag.Add(this as T);
+                    this.Parent._childrenBag.Add(this);
                 }
 
                 CallContext.LogicalSetData(ContextKey, this);

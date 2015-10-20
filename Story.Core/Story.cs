@@ -9,7 +9,7 @@
     using Utils;
 
     [Serializable]
-    public class Story : ContextBoundObject<Story>, IStory
+    public class Story : ContextBoundObject<IStory>, IStory
     {
         private readonly Stopwatch stopWatch;
         private readonly IStoryLog log;
@@ -62,7 +62,7 @@
 
         public new IEnumerable<IStory> Children
         {
-            get { return (IEnumerable<IStory>)base.Children; }
+            get { return base.Children.Cast<IStory>(); }
         }
 
         public IStoryData Data
