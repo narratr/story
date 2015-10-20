@@ -13,7 +13,7 @@ namespace Story.Core.Handlers
         public string FormatStory(IStory story, string handlerName)
         {
             StringBuilder str = new StringBuilder();
-            str.AppendFormat("{0}\n  Story {1} ({2}) on rule {3} took {4} ms\n", story.StartDateTime, story.Name, story.InstanceId, handlerName, story.Elapsed.TotalMilliseconds);
+            str.AppendFormat("{0}\n  Story {1} ({2}) on rule {3}\n", story.StartDateTime, story.Name, story.InstanceId, handlerName);
 
             foreach (var item in story.GetData())
             {
@@ -28,8 +28,23 @@ namespace Story.Core.Handlers
             {
                 str.AppendFormat("  +{0} ms {1} {2}\n", (line.DateTime - story.StartDateTime).TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
             }
+            str.Append('\n');
+
+            AddStory(story, str, 1);
+            str.Append('\n');
 
             return str.ToString();
+        }
+
+        public void AddStory(IStory story, StringBuilder str, int level)
+        {
+            var spaces = new StringBuilder();
+            spaces.Append(' ', level * 2);
+            str.AppendFormat("{0}- Story \"{1}\" took {2} ms\n", spaces, story.Name, story.Elapsed.Milliseconds);
+            foreach (var childStory in story.Children)
+            {
+                AddStory(childStory, str, level + 1);
+            }
         }
     }
 
