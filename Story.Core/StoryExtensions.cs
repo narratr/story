@@ -263,8 +263,11 @@
             return story.Log.Union(story.Children.Flatten(childStory => childStory.Children).SelectMany(childStory => childStory.Log));
         }
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        private static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
         {
+            Ensure.ArgumentNotNull(source, "source");
+            Ensure.ArgumentNotNull(childrenSelector, "childrenSelector");
+
             LinkedList<T> list = new LinkedList<T>(source);
 
             while (list.Count > 0)
