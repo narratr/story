@@ -1,10 +1,12 @@
+using Story.Core;
+using Story.Core.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace Story.Core.Handlers
+namespace Story.Ext.Handlers
 {
     public abstract class BufferedHandler : StoryHandlerBase
     {
