@@ -139,10 +139,10 @@
             Storytelling.StartNew("testStory", () =>
             {
                 Storytelling.Data["userId"] = "user13";
-
-                Assert.IsTrue(invokedBefore);
-                Assert.IsTrue(invokedAfter);
             });
+
+            Assert.IsFalse(invokedBefore);
+            Assert.IsTrue(invokedAfter);
         }
 
         [Test]
