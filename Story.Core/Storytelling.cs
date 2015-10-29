@@ -1,27 +1,15 @@
+﻿using Story.Core.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+
 namespace Story.Core
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
-    // TODO: name
-    public class ContextStory : IStory
+    public static class Storytelling
     {
-        private readonly bool ignoreEmptyStory;
-
-        private ContextStory(bool ignoreEmptyStory)
-        {
-            this.ignoreEmptyStory = ignoreEmptyStory;
-        }
-
-        // TODO: name
-        public static IStory GetUpdatedCurrentStory(bool ignoreEmptyStory = false)
-        {
-            return new ContextStory(ignoreEmptyStory);
-        }
-
-        private IStory CurrentStory
+        public static IStory Current
         {
             get
             {
@@ -43,101 +31,120 @@ namespace Story.Core
 
                 // return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
 
-                if (!this.ignoreEmptyStory)
+                //if (!this.ignoreEmptyStory)
                 {
                     throw new InvalidOperationException("No story in context");
                 }
 
-                return new DummyStory();
+                //return new ContextStory.DummyStory();
             }
         }
 
-        Task IStory.Task
-        {
-            get;
-            set;
-        }
+        public static IStoryFactory Factory { get; set; }
 
-        string IStory.Name
+        public static IStory IgnoreEmptyStory
         {
             get
             {
-                return CurrentStory.Name;
+                return Story.FromContext() as IStory ?? new DummyStory();
             }
         }
 
-        string IStory.InstanceId
+        /// <summary>
+        /// Write to the log of the story with debug log severity
+        /// </summary>
+        public static void Debug(string format, params object[] args)
         {
-            get
-            {
-                return CurrentStory.InstanceId;
-            }
+            Current.Log.Debug(format, args);
         }
 
-        TimeSpan IStory.Elapsed
+        /// <summary>
+        /// Write to the log of the story with information log severity
+        /// </summary>
+        public static void Info(string format, params object[] args)
         {
-            get
-            {
-                return CurrentStory.Elapsed;
-            }
+            Current.Log.Info(format, args);
         }
 
-        IStoryData IStory.Data
+        /// <summary>
+        /// Write to the log of the story with warning log severity
+        /// </summary>
+        public static void Warn(string format, params object[] args)
         {
-            get
-            {
-                return CurrentStory.Data;
-            }
+            Current.Log.Warn(format, args);
         }
 
-        IStoryLog IStory.Log
+        /// <summary>
+        /// Write to the log of the story with error log severity
+        /// </summary>
+        public static void Error(string format, params object[] args)
         {
-            get
-            {
-                return CurrentStory.Log;
-            }
+            Current.Log.Error(format, args);
         }
 
-        IStory IStory.Parent
+        /// <summary>
+        /// Write to the log of the story with critical log severity
+        /// </summary>
+        public static void Critical(string format, params object[] args)
         {
-            get
-            {
-                return CurrentStory.Parent;
-            }
+            Current.Log.Critical(format, args);
         }
 
-        IEnumerable<IStory> IStory.Children
+        public static IStoryData Data
         {
-            get
-            {
-                return CurrentStory.Children;
-            }
+            get { return Current.Data; }
         }
 
-        IRuleset<IStory, IStoryHandler> IStory.HandlerProvider
+        /// <summary>
+        /// Invokes the task to be observed by this story.
+        /// </summary>
+        public static T StartNew<T>(Func<T> func, [CallerMemberName]string name = "")
         {
-            get
-            {
-                return CurrentStory.HandlerProvider;
-            }
+            return Factory.StartNew(name, func);
         }
 
-        DateTime IStory.StartDateTime
+        public static T StartNew<T>(string name, Func<T> func)
         {
-            get
-            {
-                return DateTime.MinValue;
-            }
+            return Factory.StartNew(name, func);
         }
 
-        void IStory.Start()
+        /// <summary>
+        /// Invokes the task to be observed by this story.
+        /// </summary>
+        public static void StartNew(string name, Action action)
         {
-            throw new InvalidOperationException("Context story should not invoke Start");
+            Factory.StartNew(name, action);
         }
 
-        void IStory.Stop()
+        public static void StartNew(Action action, [CallerMemberName]string name = "")
         {
-            throw new InvalidOperationException("Context story should not invoke Stop");
+            Factory.StartNew(name, action);
+        }
+
+        /// <summary>
+        /// Invokes the task to be observed by this story.
+        /// </summary>
+        public static Task<T> StartNewAsync<T>(string name, Func<Task<T>> func)
+        {
+            return Factory.StartNewAsync(name, func);
+        }
+
+        public static Task<T> StartNewAsync<T>(Func<Task<T>> func, [CallerMemberName]string name = "")
+        {
+            return Factory.StartNewAsync(name, func);
+        }
+
+        /// <summary>
+        /// Invokes the task to be observed by this story.
+        /// </summary>
+        public static Task StartNewAsync(string name, Func<Task> func)
+        {
+            return Factory.StartNewAsync(name, func);
+        }
+
+        public static Task StartNewAsync(Func<Task> func, [CallerMemberName]string name = "")
+        {
+            return Factory.StartNewAsync(name, func);
         }
 
         private class DummyStory : IStory

@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Story.Core
 {
-    public class FileBasedStoryRulesetProvider : IStoryRulesetProvider, IDisposable
+    public class FileBasedStoryFactory : IStoryFactory, IDisposable
     {
         /*
             Sample file:
@@ -38,11 +38,11 @@ namespace Story.Core
         };
 
         private FileWatcher fileWatcher;
-        private IRuleset<IStory, IStoryHandler> ruleset;
+        private IRuleset<IStory, IStoryHandler> ruleset = DefaultRuleset;
 
         private readonly Func<object[]> rulesetConstructorArgsProvider;
 
-        public FileBasedStoryRulesetProvider(string path, Func<object[]> rulesetConstructorArgsProvider = null)
+        public FileBasedStoryFactory(string path, Func<object[]> rulesetConstructorArgsProvider = null)
         {
             this.fileWatcher = new FileWatcher(path, OnFileChanged);
             this.rulesetConstructorArgsProvider = rulesetConstructorArgsProvider ?? (() => new object[0]);
@@ -50,7 +50,7 @@ namespace Story.Core
 
         private void OnFileChanged(string fileContent)
         {
-            new Story("FileBasedStoryRulesetProvider", DefaultRuleset).Run(story =>
+            Storytelling.StartNew("FileBasedStoryRulesetProvider", () =>
             {
                 // Create a new instance of the C# compiler
                 var compiler = new CSharpCodeProvider();
@@ -91,25 +91,25 @@ namespace Story.Core
                         if (rulesetType != null)
                         {
                             var args = this.rulesetConstructorArgsProvider();
-                            var ruleset = results.CompiledAssembly.CreateInstance(rulesetType.FullName, false, BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public, null, args, null, null) as IRuleset<IStory, IStoryHandler>;
-                            this.ruleset = ruleset;
-                            story.Log.Info("Ruleset updated to {0}", rulesetType.Name);
+                            var newRuleset = results.CompiledAssembly.CreateInstance(rulesetType.FullName, false, BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public, null, args, null, null) as IRuleset<IStory, IStoryHandler>;
+                            this.ruleset = newRuleset;
+                            Storytelling.Info("Ruleset updated to {0}", rulesetType.Name);
                         }
                         else
                         {
-                            story.Log.Warn("Missing IRuleset<IStory, IStoryHandler>");
+                            Storytelling.Warn("Missing IRuleset<IStory, IStoryHandler>");
                         }
                     }
                     catch (Exception ex)
                     {
-                        story.Log.Error(ex.ToString());
+                        Storytelling.Error(ex.ToString());
                     }
                 }
                 else
                 {
                     foreach (var error in results.Errors)
                     {
-                        story.Log.Warn(error.ToString());
+                        Storytelling.Warn(error.ToString());
                     }
                 }
             });
@@ -136,6 +136,11 @@ namespace Story.Core
                     this.fileWatcher = null;
                 }
             }
+        }
+
+        public IStory CreateStory(string name)
+        {
+            return new Story(name, this.ruleset);
         }
     }
 }
