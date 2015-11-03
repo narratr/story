@@ -1,16 +1,14 @@
 ﻿namespace Story.Tests
 {
+    using NUnit.Framework;
+    using Story.Core;
+    using Story.Core.Handlers;
+    using Story.Core.Rules;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-
-    using NUnit.Framework;
-
-    using Story.Core;
-    using Story.Core.Rules;
-    using Story.Core.Handlers;
 
     [TestFixture]
     public class CoreTests
@@ -18,6 +16,7 @@
         [SetUp]
         public void Setup()
         {
+            Storytelling.Factory = new BasicStoryFactory(new Ruleset<IStory, IStoryHandler>());
         }
 
         [Test]
@@ -53,11 +52,11 @@
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
 
-            new Story("base", handlerRules).Run(baseStory =>
+            Storytelling.StartNew("base", () =>
             {
-                new Story("child", handlerRules).Run(childStory =>
+                Storytelling.StartNew("child", () =>
                 {
-                    Assert.AreEqual("base/child", childStory.Name);
+                    Assert.AreEqual("base/child", Storytelling.Current.Name);
                 });
             });
         }
@@ -67,9 +66,9 @@
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
 
-            new Story("testStory", handlerRules).Run(story =>
+            Storytelling.StartNew("testStory", () =>
             {
-                Assert.AreEqual("testStory", story.Name);
+                Assert.AreEqual("testStory", Storytelling.Current.Name);
             });
         }
 
@@ -96,22 +95,22 @@
                 },
             };
 
-            new Story("testStory", handlerRules).Run(story =>
+            Storytelling.StartNew("testStory", () =>
             {
                 foreach (var kvp in data)
                 {
-                    story.Data[kvp.Key] = kvp.Value;
+                    Storytelling.Data[kvp.Key] = kvp.Value;
                 }
             });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException), ExpectedMessage ="oh oh")]
+        [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "oh oh")]
         public void story_exception_thrown_is_propagated()
         {
             var handlerRules = new Ruleset<IStory, IStoryHandler>();
 
-            new Story("testStory", handlerRules).Run(story =>
+            Storytelling.StartNew("testStory", () =>
             {
                 throw new InvalidOperationException("oh oh");
             });
@@ -135,12 +134,14 @@
                 }
             };
 
-            var testStory = new Story("testStory", handlerRules);
-            testStory.Data["userId"] = "user13";
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
 
-            testStory.Run(story => {});
+            Storytelling.StartNew("testStory", () =>
+            {
+                Storytelling.Data["userId"] = "user13";
+            });
 
-            Assert.IsTrue(invokedBefore);
+            Assert.IsFalse(invokedBefore);
             Assert.IsTrue(invokedAfter);
         }
 
@@ -162,13 +163,15 @@
                 }
             };
 
-            var testStory = new Story("testStory", handlerRules);
-            testStory.Data["userId"] = "user21";
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
 
-            testStory.Run(story => { });
+            Storytelling.StartNew("testStory", () =>
+            {
+                Storytelling.Data["userId"] = "user21";
 
-            Assert.IsFalse(invokedBefore);
-            Assert.IsFalse(invokedAfter);
+                Assert.IsFalse(invokedBefore);
+                Assert.IsFalse(invokedAfter);
+            });
         }
 
         [Test]
@@ -197,14 +200,15 @@
                 },
             };
 
-            new Story("testStory", handlerRules).Run(story =>
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
+
+            Storytelling.StartNew("testStory", () =>
             {
                 foreach (var kvp in log)
                 {
-                    story.Log.Add(kvp.Key, kvp.Value);
+                    Storytelling.Current.Log.Add(kvp.Key, kvp.Value);
                 }
             });
-
         }
     }
 }
