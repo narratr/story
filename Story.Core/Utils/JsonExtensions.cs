@@ -3,7 +3,8 @@ namespace Story.Core.Utils
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
-    internal static class JsonExtensions
+    // TODO: change back to internal
+    public static class JsonExtensions
     {
         public static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
         {

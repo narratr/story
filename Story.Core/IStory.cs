@@ -1,4 +1,6 @@
-﻿namespace Story.Core
+﻿using Newtonsoft.Json;
+
+namespace Story.Core
 {
     using System;
     using System.Collections.Generic;
@@ -55,6 +57,7 @@
         /// <summary>
         /// Gets the story parent or null or this is a root story.
         /// </summary>
+        [JsonIgnore]
         IStory Parent { get; }
 
         /// <summary>

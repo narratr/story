@@ -1,10 +1,14 @@
+using Microsoft.WindowsAzure.Storage.Blob;
 using Story.Core;
 using Story.Core.Handlers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace Story.Ext.Handlers
 {
@@ -12,7 +16,7 @@ namespace Story.Ext.Handlers
     {
         private readonly Subject<IStory> _storiesSubject;
 
-        public BufferedHandler(string name, TimeSpan timeDelay, int batchSize)
+        protected BufferedHandler(string name, TimeSpan timeDelay, int batchSize)
             : base(name)
         {
             _storiesSubject = new Subject<IStory>();

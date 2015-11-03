@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="ContextBoundObject.cs" />
     <Compile Include="FileBasedStoryFactory.cs" />
+    <Compile Include="Handlers\CompositeHandler.cs" />
+    <Compile Include="Handlers\StoryHandlerExtensions.cs" />
     <Compile Include="IStoryTransport.cs" />
     <Compile Include="Storytelling.cs" />
     <Compile Include="StoryWorker.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="StoryLogEntry.cs" />
     <Compile Include="Utils\Ensure.cs" />
     <Compile Include="Utils\JsonExtensions.cs" />
+    <Compile Include="Utils\Retrier.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

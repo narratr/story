@@ -1,4 +1,6 @@
-﻿namespace Story.Core
+﻿using Newtonsoft.Json;
+
+namespace Story.Core
 {
     using System;
     using System.Collections.Generic;
@@ -55,6 +57,7 @@
             private set;
         }
 
+        [JsonIgnore]
         public new IStory Parent
         {
             get { return (IStory)base.Parent; }
