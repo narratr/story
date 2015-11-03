@@ -13,6 +13,14 @@ namespace Story.Core.Utils
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+        public static readonly JsonSerializerSettings JsonSerializerIgnoreErrorSettings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Error = (sender, args) => { args.ErrorContext.Handled = true; }
+        };
+
         /// <summary>
         /// Serializes the specified object.
         /// </summary>
@@ -29,6 +37,16 @@ namespace Story.Core.Utils
             }
 
             return JsonConvert.SerializeObject(obj, JsonSerializerSettings);
+        }
+
+        public static string SerializeIgnoreError(this object obj)
+        {
+            if (obj == null)
+            {
+                return null;
+            }
+
+            return JsonConvert.SerializeObject(obj, JsonSerializerIgnoreErrorSettings);
         }
     }
 }

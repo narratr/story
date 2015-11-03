@@ -17,12 +17,12 @@ namespace Story.Ext.Handlers
             var storyTableEntity = new StoryTableEntity()
             {
                 Log = story.GetLogs().Serialize(),
-                Data = story.GetData().Serialize(),
+                Data = story.GetData().SerializeIgnoreError(),
                 Name = story.Name,
                 Elapsed = story.Elapsed,
                 StartDateTime = story.StartDateTime,
                 InstanceId = story.InstanceId,
-                Json = story.Serialize()
+                Json = story.SerializeIgnoreError()
             };
 
             storyTableEntity.UpdateKeys(story);
