@@ -33,7 +33,7 @@ namespace Story.Core
         {
             Rules =
             {
-                new PredicateRule(_ => true, _ => new TraceHandler("trace", StoryFormatters.BasicStoryFormatter))
+                new PredicateRule(story => story.IsRoot(), _ => new TraceHandler("trace", StoryFormatters.BasicStoryFormatter))
             }
         };
 
@@ -50,7 +50,10 @@ namespace Story.Core
 
         private void OnFileChanged(string fileContent)
         {
-            Storytelling.StartNew("FileBasedStoryRulesetProvider", () =>
+            var story = new Story("FileBasedStoryRulesetProvider.OnFileChanged", this.ruleset, notInContext: true);
+            story.Start();
+
+            try
             {
                 // Create a new instance of the C# compiler
                 var compiler = new CSharpCodeProvider();
@@ -91,9 +94,10 @@ namespace Story.Core
                         if (rulesetType != null)
                         {
                             var args = this.rulesetConstructorArgsProvider();
-                            var newRuleset = results.CompiledAssembly.CreateInstance(rulesetType.FullName, false, BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public, null, args, null, null) as IRuleset<IStory, IStoryHandler>;
+                            var newRuleset =
+                                results.CompiledAssembly.CreateInstance(rulesetType.FullName, false, BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public, null, args, null, null) as IRuleset<IStory, IStoryHandler>;
                             this.ruleset = newRuleset;
-                            Storytelling.Info("Ruleset updated to {0}", rulesetType.Name);
+                            story.Log.Info("Ruleset updated to {0}", rulesetType.Name);
                         }
                         else
                         {
@@ -102,17 +106,21 @@ namespace Story.Core
                     }
                     catch (Exception ex)
                     {
-                        Storytelling.Error(ex.ToString());
+                        story.Log.Error(ex.ToString());
                     }
                 }
                 else
                 {
                     foreach (var error in results.Errors)
                     {
-                        Storytelling.Warn(error.ToString());
+                        story.Log.Warn(error.ToString());
                     }
                 }
-            });
+            }
+            finally
+            {
+                story.Stop();
+            }
         }
 
         public IRuleset<IStory, IStoryHandler> GetRuleset()

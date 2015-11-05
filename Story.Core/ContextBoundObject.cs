@@ -21,7 +21,6 @@
         protected ContextBoundObject()
         {
             this.InstanceId = Guid.NewGuid().ToString();
-            this.Attach();
         }
 
         /// <summary>
@@ -76,7 +75,7 @@
         /// <summary>
         /// Attaches this instance.
         /// </summary>
-        protected void Attach()
+        public void Attach()
         {
             if (HttpContext.Current != null)
             {
