@@ -203,7 +203,7 @@
         /// <summary>
         /// Gets the data from story and child stories.
         /// </summary>
-        public static IEnumerable<KeyValuePair<string, object>> GetData(this IStory story, bool recursive = true)
+        public static IStoryData GetData(this IStory story, bool recursive = true)
         {
             Ensure.ArgumentNotNull(story, "story");
 
@@ -212,7 +212,29 @@
                 return story.Data;
             }
 
-            return story.Data.Union(story.Children.Flatten(childStory => childStory.Children).SelectMany(childStory => childStory.Data));
+            IStoryData storyData = new StoryData(story)
+            {
+                IgnoreDuplicates = true
+            };
+            AddData(storyData, story);
+
+            return storyData;
+        }
+
+        private static void AddData(IStoryData storyData, IStory story)
+        {
+            foreach (var data in story.Data)
+            {
+                storyData[data.Key] = data.Value;
+            }
+
+            if (story.Children != null)
+            {
+                foreach (var childStory in story.Children)
+                {
+                    AddData(storyData, childStory);
+                }
+            }
         }
 
         /// <summary>
