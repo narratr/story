@@ -17,6 +17,8 @@
             this.Story = story;
         }
 
+        public bool IgnoreDuplicates { get; set; }
+
         protected IStory Story { get; private set; }
 
         public virtual object this[string key]
@@ -33,7 +35,7 @@
             {
                 Ensure.ArgumentNotEmpty(key, "key");
 
-                if (this.entries.ContainsKey(key))
+                if (!IgnoreDuplicates && this.entries.ContainsKey(key))
                 {
                     throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, "Data already has key [{0}] with value", key));
                 }
