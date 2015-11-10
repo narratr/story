@@ -17,7 +17,7 @@ namespace Story.Ext.Handlers
             var storyTableEntity = new StoryTableEntity()
             {
                 Log = story.GetLogs().Serialize(),
-                Data = story.GetData().SerializeIgnoreError(),
+                Data = story.GetDataValues().SerializeIgnoreError(),
                 Name = story.Name,
                 Elapsed = story.Elapsed,
                 StartDateTime = story.StartDateTime,

@@ -15,7 +15,7 @@ namespace Story.Core.Handlers
             StringBuilder str = new StringBuilder();
             str.AppendFormat("{0}\n  Story {1} ({2}) on rule {3}\n", story.StartDateTime, story.Name, story.InstanceId, handlerName);
 
-            foreach (var item in story.GetData())
+            foreach (var item in story.GetDataValues())
             {
                 if (item.Value != null)
                 {

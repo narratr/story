@@ -153,6 +153,32 @@
         }
 
         /// <summary>
+        /// Gets data values
+        /// </summary>
+        /// <param name="story">The story.</param>
+        /// <param name="recursive">if set to <c>true</c> [recursive].</param>
+        public static IEnumerable<KeyValuePair<string, object>> GetDataValues(this IStory story, bool recursive = true)
+        {
+            Ensure.ArgumentNotNull(story, "story");
+
+            foreach (var data in story.Data)
+            {
+                yield return data;
+            }
+
+            if (recursive && story.Children != null)
+            {
+                foreach (var childStory in story.Children)
+                {
+                    foreach (var data in childStory.GetDataValues(recursive))
+                    {
+                        yield return data;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Get all values with the responding story from the story data in the story
         /// and from the children stories inside
         /// or an empty enumerable if not found
@@ -244,12 +270,21 @@
         {
             Ensure.ArgumentNotNull(story, "story");
 
-            if (recursive == false)
+            foreach (var log in story.Log)
             {
-                return story.Log;
+                yield return log;
             }
 
-            return story.Log.Union(story.Children.Flatten(childStory => childStory.Children).SelectMany(childStory => childStory.Log));
+            if (recursive && story.Children != null)
+            {
+                foreach (var childStory in story.Children)
+                {
+                    foreach (var log in childStory.GetLogs(recursive))
+                    {
+                        yield return log;
+                    }
+                }
+            }
         }
 
         private static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
