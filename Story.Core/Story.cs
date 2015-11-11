@@ -45,6 +45,7 @@ namespace Story.Core
             private set;
         }
 
+        [JsonIgnore]
         public IRuleset<IStory, IStoryHandler> HandlerProvider
         {
             get;
@@ -83,6 +84,7 @@ namespace Story.Core
             private set;
         }
 
+        [JsonIgnore]
         public Task Task
         {
             get;

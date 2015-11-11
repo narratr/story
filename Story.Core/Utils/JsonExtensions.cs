@@ -1,3 +1,5 @@
+using System;
+
 namespace Story.Core.Utils
 {
     using Newtonsoft.Json;
@@ -10,15 +12,8 @@ namespace Story.Core.Utils
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
-
-        public static readonly JsonSerializerSettings JsonSerializerIgnoreErrorSettings = new JsonSerializerSettings()
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Error = (sender, args) => { args.ErrorContext.Handled = true; }
         };
 
         /// <summary>
@@ -37,16 +32,6 @@ namespace Story.Core.Utils
             }
 
             return JsonConvert.SerializeObject(obj, JsonSerializerSettings);
-        }
-
-        public static string SerializeIgnoreError(this object obj)
-        {
-            if (obj == null)
-            {
-                return null;
-            }
-
-            return JsonConvert.SerializeObject(obj, JsonSerializerIgnoreErrorSettings);
         }
     }
 }

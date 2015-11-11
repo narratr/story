@@ -1,4 +1,6 @@
-﻿namespace Story.Core
+﻿using Newtonsoft.Json;
+
+namespace Story.Core
 {
     using System;
     using System.Collections.Concurrent;
@@ -31,6 +33,7 @@
         /// <summary>
         /// Gets the parent.
         /// </summary>
+        [JsonIgnore]
         public ContextBoundObject<T> Parent { get; private set; }
 
         /// <summary>

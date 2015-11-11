@@ -16,13 +16,11 @@ namespace Story.Ext.Handlers
 
             var storyTableEntity = new StoryTableEntity()
             {
-                Log = story.GetLogs().Serialize(),
-                Data = story.GetDataValues().SerializeIgnoreError(),
                 Name = story.Name,
                 Elapsed = story.Elapsed,
                 StartDateTime = story.StartDateTime,
                 InstanceId = story.InstanceId,
-                Json = story.SerializeIgnoreError()
+                Json = story.Serialize()
             };
 
             storyTableEntity.UpdateKeys(story);
@@ -46,8 +44,8 @@ namespace Story.Ext.Handlers
 
         private void UpdateKeys(IStory story)
         {
-            PartitionKey = String.Format(story.StartDateTime.ToString("yyyyMMddhh"));
-            RowKey = story.InstanceId;
+            PartitionKey = String.Format(story.StartDateTime.ToString("yyyyMMddHH"));
+            RowKey = story.StartDateTime.ToString("mmssffff") + story.InstanceId;
         }
     }
 }
