@@ -1,4 +1,6 @@
-﻿namespace Story.Core
+﻿using Newtonsoft.Json;
+
+namespace Story.Core
 {
     using System;
     using System.Collections.Concurrent;
@@ -21,7 +23,6 @@
         protected ContextBoundObject()
         {
             this.InstanceId = Guid.NewGuid().ToString();
-            this.Attach();
         }
 
         /// <summary>
@@ -32,6 +33,7 @@
         /// <summary>
         /// Gets the parent.
         /// </summary>
+        [JsonIgnore]
         public ContextBoundObject<T> Parent { get; private set; }
 
         /// <summary>
@@ -76,7 +78,7 @@
         /// <summary>
         /// Attaches this instance.
         /// </summary>
-        protected void Attach()
+        public void Attach()
         {
             if (HttpContext.Current != null)
             {

@@ -1,4 +1,6 @@
-﻿namespace Story.Core
+﻿using Newtonsoft.Json;
+
+namespace Story.Core
 {
     using System;
     using System.Collections.Generic;
@@ -11,35 +13,29 @@
     [Serializable]
     public class Story : ContextBoundObject<IStory>, IStory
     {
+        private readonly bool notInContext;
         private readonly Stopwatch stopWatch;
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
-        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider)
+        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider, bool notInContext = false)
         {
-            try
+            Ensure.ArgumentNotEmpty(name, "name");
+            Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
+
+            this.HandlerProvider = handlerProvider;
+            this.notInContext = notInContext;
+            this.stopWatch = new Stopwatch();
+            this.log = new StoryLog(this);
+            this.data = new StoryData(this);
+
+            if (this.Parent == null)
             {
-                Ensure.ArgumentNotEmpty(name, "name");
-                Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
-
-                this.HandlerProvider = handlerProvider;
-                this.stopWatch = new Stopwatch();
-                this.log = new StoryLog(this);
-                this.data = new StoryData(this);
-
-                if (this.Parent == null)
-                {
-                    this.Name = name;
-                }
-                else
-                {
-                    this.Name = this.Parent.Name + "/" + name;
-                }
+                this.Name = name;
             }
-            catch
+            else
             {
-                base.Detach();
-                throw;
+                this.Name = this.Parent.Name + "/" + name;
             }
         }
 
@@ -49,12 +45,14 @@
             private set;
         }
 
+        [JsonIgnore]
         public IRuleset<IStory, IStoryHandler> HandlerProvider
         {
             get;
             private set;
         }
 
+        [JsonIgnore]
         public new IStory Parent
         {
             get { return (IStory)base.Parent; }
@@ -86,6 +84,7 @@
             private set;
         }
 
+        [JsonIgnore]
         public Task Task
         {
             get;
@@ -94,6 +93,11 @@
 
         public void Start()
         {
+            if (!this.notInContext)
+            {
+                this.Attach();
+            }
+
             this.StartDateTime = DateTime.UtcNow;
             this.stopWatch.Start();
 
@@ -116,7 +120,10 @@
             }
             finally
             {
-                base.Detach();
+                if (!this.notInContext)
+                {
+                    base.Detach();
+                }
             }
         }
     }
