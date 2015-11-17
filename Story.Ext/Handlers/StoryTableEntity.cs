@@ -36,10 +36,6 @@ namespace Story.Ext.Handlers
 
         public TimeSpan Elapsed { get; set; }
 
-        public string Data { get; set; }
-
-        public string Log { get; set; }
-
         public string Json { get; set; }
 
         private void UpdateKeys(IStory story)
