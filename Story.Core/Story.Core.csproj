@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ContextBoundObject.cs" />
     <Compile Include="FileBasedStoryFactory.cs" />
     <Compile Include="Handlers\CompositeHandler.cs" />

@@ -93,12 +93,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+  <Compile Include="..\Story.Core\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Handlers\AzureTableStorageHandler.cs" />
     <Compile Include="Handlers\AzureTableStorageHandlerConfiguration.cs" />
     <Compile Include="Handlers\BufferedHandler.cs" />
     <Compile Include="Handlers\StoryTableEntity.cs" />
     <Compile Include="Handlers\StoryTransportHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Story.Core\Story.Core.csproj">
