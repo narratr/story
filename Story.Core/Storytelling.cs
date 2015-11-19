@@ -1,4 +1,6 @@
-﻿using Story.Core.Utils;
+﻿using Story.Core.Handlers;
+using Story.Core.Rules;
+using Story.Core.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +11,18 @@ namespace Story.Core
 {
     public static class Storytelling
     {
+        static Storytelling()
+        {
+            var ruleset = new Ruleset<IStory, IStoryHandler>();
+
+            ruleset.Rules.Add(
+                new PredicateRule(
+                    story => story.IsRoot(),
+                    story => new TraceHandler("DefaultStoryHandler", StoryFormatters.BasicStoryFormatter)));
+
+            Factory = new BasicStoryFactory(ruleset);
+        }
+
         public static IStory Current
         {
             get
