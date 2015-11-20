@@ -2,29 +2,35 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Story.Core;
 using Story.Core.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace Story.Ext.Handlers
 {
     public class AzureTableStorageHandler : BufferedHandler
     {
-        private readonly AzureTableStorageHandlerConfiguration _configuration;
-        private CloudTable _storiesTable;
+        private readonly AzureTableStorageHandlerConfiguration configuration;
+        private CloudTable storiesTable;
 
         public AzureTableStorageHandler(string name, AzureTableStorageHandlerConfiguration configuration)
             : base(name, configuration.BatchTimeDelay, configuration.BatchSize)
         {
-            _configuration = configuration;
+            this.configuration = configuration;
 
             Initialize();
         }
 
         private void Initialize()
         {
-            CloudStorageAccount account = CloudStorageAccount.Parse(_configuration.ConnectionString);
+            if (this.configuration.ConnectionString == null)
+            {
+                throw new InvalidOperationException("Missing StoryTableStorage connection string");
+            }
+
+            CloudStorageAccount account = CloudStorageAccount.Parse(this.configuration.ConnectionString);
             var tableClient = account.CreateCloudTableClient();
-            _storiesTable = tableClient.GetTableReference(_configuration.TableName);
-            _storiesTable.CreateIfNotExists();
+            this.storiesTable = tableClient.GetTableReference(this.configuration.TableName);
+            this.storiesTable.CreateIfNotExists();
         }
 
         protected override void OnStoriesComplete(IList<IStory> stories)
@@ -44,7 +50,7 @@ namespace Story.Ext.Handlers
             {
                 Retrier.Retry<object>(() =>
                 {
-                    _storiesTable.ExecuteBatch(tableBatchOperation);
+                    this.storiesTable.ExecuteBatch(tableBatchOperation);
                     return null;
                 });
             }
