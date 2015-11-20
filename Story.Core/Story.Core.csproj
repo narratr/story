@@ -48,6 +48,7 @@
     <Compile Include="ContextBoundObject.cs" />
     <Compile Include="FileBasedStoryFactory.cs" />
     <Compile Include="Handlers\CompositeHandler.cs" />
+    <Compile Include="Handlers\StoryHandlers.cs" />
     <Compile Include="Handlers\StoryHandlerExtensions.cs" />
     <Compile Include="IStoryTransport.cs" />
     <Compile Include="Storytelling.cs" />

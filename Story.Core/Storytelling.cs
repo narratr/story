@@ -18,7 +18,7 @@ namespace Story.Core
             ruleset.Rules.Add(
                 new PredicateRule(
                     story => story.IsRoot(),
-                    story => new TraceHandler("DefaultStoryHandler", StoryFormatters.GetBasicStoryFormatter())));
+                    story => StoryHandlers.DefaultTraceHandler));
 
             Factory = new BasicStoryFactory(ruleset);
         }
