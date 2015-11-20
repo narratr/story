@@ -9,12 +9,12 @@ Don't just write logs, understand what's going on.
     {
         var i = 0;
         i++;
-        Storytelling.Debug("added 1 to i"); // log
+        Storytelling.Info("added 1 to i"); // log
         Storytelling.Data["i"] = i;         // data
     });
 
     // Output (to the .net trace):
-    // Story MyAction (ebdfcef5-f772-4dfd-8f0f-580eb79d1bb1) on rule DefaultStoryHandler
+    // Story MyAction (ebdfcef5-f772-4dfd-8f0f-580eb79d1bb1) on rule Trace
     // i - 1
 
     // +7.0024 ms Info added 1 to i
@@ -74,11 +74,11 @@ By default all stories are outputed to the trace, but you can (and should) set y
     var ruleset = new Ruleset<IStory, IStoryHandler>();
 
     // Add a new predicate rule, for any story run the console handler which prints the story to the console
-    // use the BasicStoryFormatter to format the story as string for printing
+    var consoleHandler = new ConsoleHandler("PrintToConsole", StoryFormatters.GetBasicStoryFormatter(LogSeverity.Debug));
     ruleset.Rules.Add(
         new PredicateRule( 
             story => true,
-            story => new ConsoleHandler("PrintToConsole", StoryFormatters.BasicStoryFormatter)));
+            story => consoleHandler));
 
     // Set a new basic factory that uses the ruleset as the default story factory
     Storytelling.Factory = new BasicStoryFactory(ruleset);
@@ -125,7 +125,7 @@ And the RulesetFile.cs
             Rules.Add(
                 new PredicateRule(
                     story => story.IsRoot() && story.GetDataValue("userId") as string == "123456",
-                    story => new TraceHandler("trace", StoryFormatters.BasicStoryFormatter)));
+                    story => StoryHandlers.DefaultTraceHandler));
         }
     }
 
@@ -207,7 +207,7 @@ Story framework and web applications are  made for each other, you can encapsula
     /// </summary>
     public class StoryMiddleware : OwinMiddleware
     {
-        public LoggingMiddleware(OwinMiddleware next)
+        public StoryMiddleware(OwinMiddleware next)
             : base(next)
         {
         }
@@ -265,16 +265,17 @@ Whenever you start a new story and there is already a story in the context, the 
     ruleset.Rules.Add(
         new PredicateRule( 
             story => story.IsRoot(), // run only on the root story
-            story => new ConsoleHandler("PrintToConsole", StoryFormatters.BasicStoryFormatter)));
+            story => StoryHandlers.DefaultConsoleHandler));
 ```
 
 One scenario that a substory opens is having a (sub)story for an internal operation that may take a while and then have a rule that makes sure this operation doesn't take more than expected
 
 ```csharp
+    var traceHandler = new TraceHandler("RunQueryTooLong");
     ruleset.Rules.Add(
         new PredicateRule( 
             story => story.Name == "RunQuery" && story.Elapsed.TotalMilliseconds > 5000,
-            story => new TraceHandler("RunQueryTooLong", StoryFormatters.BasicStoryFormatter)));
+            story => traceHandler));
 ```
 
 ### Story Extensions
@@ -315,7 +316,7 @@ Has 2 arguments:
     ruleset.Rules.Add(
         new PredicateRule(
             story => story.GetDataValue("userId") as string == "123456",
-            story => new TraceHandler("trace", StoryFormatters.BasicStoryFormatter)));
+            story => StoryHandlers.DefaultTraceHandler));
 ```
 
 ### MinimumSeverityRule
@@ -323,10 +324,12 @@ Has 2 arguments:
 Handle stories with at least a single log entry with the specified severity.
 
 ```csharp
+    // If at least a single log entry had an error severity (or more), then print all log lines (debug severity and up).
+    var errorTraceHandler = new TraceHandler("TraceError", StoryFormatters.GetBasicStoryFormatter(LogSeverity.Debug);
     ruleset.Rules.Add(
         new MinimumSeverityRule(
             LogSeverity.Error,
-            story => new TraceHandler("TraceError", StoryFormatters.BasicStoryFormatter)));
+            story => errorTraceHandler)));
 
 ```
 
@@ -367,23 +370,26 @@ Handle stories with at least a single log entry with the specified severity.
 
 Output the story to the console or the trace using a story formatter (which formats a story to a string):
 
-* `StoryFormatters.BasicStoryFormatter`
-* `StoryFormatters.DelimiterStoryFormatter`
+* `StoryFormatters.GetBasicStoryFormatter(severityThreshold)` (default is BasicStoryFormatter with Info severity threshold).
+* `StoryFormatters.GetDelimiterStoryFormatter(severityThreshold)`
 
 ### ActionHandler
 
 Provide action delegates to the `ActionHandler` for start and stop events of the story.
 
 ```csharp
+    var actionHandler =
+      new ActionHandler(
+        "Action",
+        s =>
+        {
+            Console.WriteLine("Story " + story.Name);
+        });
+
     ruleset.Rules.Add(
         new PredicateRule(
             story => true,
-            story => new ActionHandler(
-                "Action",
-                s =>
-                {
-                    Console.WriteLine("Story " + story.Name);
-                })));
+            story => actionHandler));
 ```
 
 ### CompositeHandler
@@ -391,24 +397,21 @@ Provide action delegates to the `ActionHandler` for start and stop events of the
 Have more than a single story handler to handle your story for the specific rule.
 
 ```csharp
+    var storyHandler =
+        new CompositeHandler(
+            "Composite",
+            new ConsoleHandler("Console"),
+            new TraceHandler("Trace");)
+// Or
+
+    var storyHandler =
+        new ConsoleHandler("Console").Compose(
+        new TraceHandler("Trace"));
+
     ruleset.Rules.Add(
         new PredicateRule(
             story => story.IsRoot(),
-            story => new CompositeHandler(
-                "Composite",
-                new ConsoleHandler("Console", StoryFormatters.BasicStoryFormatter),
-                new TraceHandler("Trace", StoryFormatters.BasicStoryFormatter))));
-```
-
-Or
-
-```csharp
-    ruleset.Rules.Add(
-        new PredicateRule(
-            story => true,
-            story =>
-                new ConsoleHandler("Console", StoryFormatters.BasicStoryFormatter).Compose(
-                new TraceHandler("Trace", StoryFormatters.BasicStoryFormatter))));
+            story => storyHandler));
 ```
 
 ### Custom Story Handler
@@ -451,13 +454,17 @@ Use this story handler to store stories in Azure Table Storage.
 > If you use Azure Web Apps, the [Log Browser](http://www.siteextensions.net/packages/websitelogs/) site extension now supports this and can show your stories stored in the Azure Table Storage in a nice and searchable ui, more info about the site extension [here](http://blog.amitapple.com/post/2014/06/azure-website-logging/).
 
 ```csharp
+    // AzureTableStorageHandler should be created once and not per rule invocation
+    // That way it is able to buffer stories before sending them
+    var azureTableStorageHandler =
+        new AzureTableStorageHandler(
+            "AzureTableStorage",
+            new AzureTableStorageHandlerConfiguration());
+
     ruleset.Rules.Add(
         new PredicateRule(
             story => story.IsRoot(),
-            story =>
-                new AzureTableStorageHandler(
-                    "AzureTableStorage",
-                    new AzureTableStorageHandlerConfiguration())));
+            story => azureTableStorageHandler));
 ```
 
 The `AzureTableStorageHandlerConfiguration` class lets you customize the following:
