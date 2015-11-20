@@ -33,7 +33,7 @@ namespace Story.Core
         {
             Rules =
             {
-                new PredicateRule(story => story.IsRoot(), _ => new TraceHandler("trace", StoryFormatters.BasicStoryFormatter))
+                new PredicateRule(story => story.IsRoot(), _ => new TraceHandler("DefaultTrace", StoryFormatters.GetBasicStoryFormatter()))
             }
         };
 

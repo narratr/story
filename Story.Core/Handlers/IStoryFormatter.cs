@@ -10,6 +10,13 @@ namespace Story.Core.Handlers
 
     public class BasicStoryFormatter : IStoryFormatter
     {
+        private readonly LogSeverity severityThreshold;
+
+        public BasicStoryFormatter(LogSeverity severityThreshold)
+        {
+            this.severityThreshold = severityThreshold;
+        }
+
         public string FormatStory(IStory story, string handlerName)
         {
             StringBuilder str = new StringBuilder();
@@ -26,6 +33,11 @@ namespace Story.Core.Handlers
 
             foreach (var line in story.GetLogs())
             {
+                if (line.Severity < this.severityThreshold)
+                {
+                    continue;
+                }
+
                 str.AppendFormat("  +{0} ms {1} {2}\n", (line.DateTime - story.StartDateTime).TotalMilliseconds, line.Severity, line.Text/*, line.Origin*/);
             }
             str.Append('\n');
@@ -52,9 +64,9 @@ namespace Story.Core.Handlers
     {
         private readonly LogSeverity severityThreshold;
 
-        public DelimiterStoryFormatter(LogSeverity SeverityThreshold)
+        public DelimiterStoryFormatter(LogSeverity severityThreshold)
         {
-            this.severityThreshold = LogSeverity.Debug;
+            this.severityThreshold = severityThreshold;
         }
 
         public string FormatStory(IStory story, string handlerName)

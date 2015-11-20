@@ -12,7 +12,7 @@ namespace Story.Core.Handlers
         public TraceHandler(string name, IStoryFormatter storyFormatter = null)
             : base(name)
         {
-            this.storyFormatter = storyFormatter ?? StoryFormatters.DelimiterStoryFormatter;
+            this.storyFormatter = storyFormatter ?? StoryFormatters.GetDelimiterStoryFormatter();
         }
 
         public override void OnStop(IStory story)
