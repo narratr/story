@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Story.Core</id>
+    <version>$version$</version>
+    <authors>amitapl,ichen</authors>
+    <owners>amitapl,ichen</owners>
+    <licenseUrl>https://raw.githubusercontent.com/narratr/story/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/narratr/story</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A rule-based, contextual logging and telemetry framework for .NET. (Core)s</description>
+    <copyright>Copyright 2015</copyright>
+    <tags>Logs Telemetry Analytics Events</tags>
+  </metadata>
+</package>
