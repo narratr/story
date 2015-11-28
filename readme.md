@@ -484,7 +484,7 @@ Story framework is written and maintained by [Israel Chen](https://github.com/is
 
 The MIT License (MIT)
 
-Copyright (c) 2015 The logmetry authors
+Copyright (c) 2015 The Story authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
