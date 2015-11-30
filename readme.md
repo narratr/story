@@ -476,6 +476,15 @@ The `AzureTableStorageHandlerConfiguration` class lets you customize the followi
 
 > Note: When adding a data to a story with this handler, make sure it is (json) serializable, otherwise it'll fail.
 
+## Roadmap
+
+* Making Story even easier to use.
+* Support other languages/frameworks like: node.js, python and java.
+
+## Links
+
+* [Blog post - New approach to logging - Story](http://blog.amitapple.com/post/2015/11/story-new-logging-approach/)
+
 ## Authors
 
 Story framework is written and maintained by [Israel Chen](https://github.com/israelchen) and [Amit Apple](https://github.com/amitapl).
