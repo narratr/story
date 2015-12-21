@@ -7,7 +7,7 @@ namespace Story.Core
     using System.Linq;
     using System.Threading.Tasks;
 
-    public interface IStory
+    public interface IStory : IDisposable
     {
         /// <summary>
         /// Gets the friendly-name of the story.

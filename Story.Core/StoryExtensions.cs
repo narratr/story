@@ -9,6 +9,24 @@
     public static class StoryExtensions
     {
         /// <summary>
+        /// Creates a story and starts it.
+        /// </summary>
+        /// <param name="storyFactory">The story factory.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>
+        /// The new started story.
+        /// </returns>
+        public static IStory StartNew(this IStoryFactory storyFactory, string name)
+        {
+            Ensure.ArgumentNotNull(storyFactory, "storyFactory");
+
+            IStory story = storyFactory.CreateStory(name);
+            story.Start();
+
+            return story;
+        }
+
+        /// <summary>
         /// Invokes the task to be observed by this story.
         /// </summary>
         /// <typeparam name="T">The task result type.</typeparam>

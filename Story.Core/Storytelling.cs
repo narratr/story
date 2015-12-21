@@ -1,6 +1,5 @@
 ﻿using Story.Core.Handlers;
 using Story.Core.Rules;
-using Story.Core.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -107,6 +106,11 @@ namespace Story.Core
         public static IStoryData Data
         {
             get { return Current.Data; }
+        }
+
+        public static IStory StartNew([CallerMemberName]string name = "")
+        {
+            return Factory.StartNew(name);
         }
 
         /// <summary>
@@ -245,6 +249,10 @@ namespace Story.Core
             }
 
             public void Stop()
+            {
+            }
+
+            public void Dispose()
             {
             }
 
