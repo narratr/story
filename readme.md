@@ -5,13 +5,13 @@ Don't just write logs, understand what's going on.
 ## Sample
 
 ```csharp
-    Storytelling.Factory.StartNew("MyAction", () =>
+    using (Storytelling.Factory.StartNew("MyAction"))
     {
         var i = 0;
         i++;
         Storytelling.Info("added 1 to i"); // log
         Storytelling.Data["i"] = i;         // data
-    });
+    }
 
     // Output (to the .net trace):
     // Story MyAction (ebdfcef5-f772-4dfd-8f0f-580eb79d1bb1) on rule Trace
@@ -134,6 +134,18 @@ And the RulesetFile.cs
 ### Run operation within a story context
 
 ```csharp
+    using (Storytelling.Factory.StartNew())
+    {
+        var i = 0;
+        i++;
+        Storytelling.Info("added 1 to i"); // log
+        Storytelling.Data["i"] = i;        // data
+    }
+```
+
+Or with lamda if you want to report an exception thrown automatically
+
+```csharp
     Storytelling.Factory.StartNew("MyAction", () =>
     {
         var i = 0;
@@ -146,7 +158,7 @@ And the RulesetFile.cs
 Also possible to run an async operation
 
 ```csharp
-    await Storytelling.Factory.StartNewAsync("some name", async () =>
+    await Storytelling.Factory.StartNewAsync("My Async Operation", async () =>
     {
         var i = 0;
         i++;
