@@ -55,7 +55,7 @@ namespace Story.Core
         IStoryLog Log { get; }
 
         /// <summary>
-        /// Gets the story parent or null or this is a root story.
+        /// Gets the story parent or null - this is a root story.
         /// </summary>
         [JsonIgnore]
         IStory Parent { get; }

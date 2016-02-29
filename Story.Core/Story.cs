@@ -39,6 +39,10 @@ namespace Story.Core
             }
         }
 
+        public Story()
+        {
+        }
+
         public string Name
         {
             get;

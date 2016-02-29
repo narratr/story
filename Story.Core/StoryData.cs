@@ -1,5 +1,6 @@
 ﻿namespace Story.Core
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -17,6 +18,7 @@
             this.Story = story;
         }
 
+        [JsonIgnore]
         public bool IgnoreDuplicates { get; set; }
 
         protected IStory Story { get; private set; }
