@@ -14,7 +14,7 @@ namespace Story.Core
     {
         public static string ContextKey = typeof(ContextBoundObject<T>).FullName + "_" + Guid.NewGuid();
 
-        private ConcurrentBag<ContextBoundObject<T>> _childrenBag = new ConcurrentBag<ContextBoundObject<T>>();
+        private ConcurrentQueue<ContextBoundObject<T>> _childrenBag = new ConcurrentQueue<ContextBoundObject<T>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextBoundObject{T}"/> class.
@@ -91,7 +91,7 @@ namespace Story.Core
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
-                    this.Parent._childrenBag.Add(this);
+                    this.Parent._childrenBag.Enqueue(this);
                 }
 
                 HttpContext.Current.Items[ContextKey] = this;
@@ -103,7 +103,7 @@ namespace Story.Core
                 if (existingContext != null)
                 {
                     this.Parent = existingContext;
-                    this.Parent._childrenBag.Add(this);
+                    this.Parent._childrenBag.Enqueue(this);
                 }
 
                 CallContext.LogicalSetData(ContextKey, this);
