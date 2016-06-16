@@ -61,6 +61,7 @@
             });
         }
 
+
         [Test]
         public void story_name_is_not_chained_to_null_parent()
         {
@@ -209,6 +210,50 @@
                     Storytelling.Current.Log.Add(kvp.Key, kvp.Value);
                 }
             });
+        }
+        
+        private static void RegisterStoryName(IStory story, List<string> loggedStoryNames)
+        {
+            loggedStoryNames.Add(story.Name);
+            foreach (var child in story.Children)
+	        {
+                RegisterStoryName(child, loggedStoryNames);
+	        }
+        }
+
+        [Test]
+        public void substories_should_be_in_right_order()
+        {
+            List<string> _loggedStoryNames = new List<string>();
+
+            var handlerRules = new Ruleset<IStory, IStoryHandler>();
+            handlerRules.Rules.Add(new PredicateRule
+                (
+                    _ => _.IsRoot(),
+                    _ => new ActionHandler("unittest", (story) => RegisterStoryName(story, _loggedStoryNames))
+                )
+            );
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
+            using (Storytelling.StartNew("parent"))
+            {
+                using (Storytelling.StartNew("child1")) { }
+                using (Storytelling.StartNew("child2"))
+                {
+                    using (Storytelling.StartNew("child2/child1")) { }
+                    using (Storytelling.StartNew("child2/child2")) { }
+                }
+                using (Storytelling.StartNew("child3")) { }
+            }
+
+            CollectionAssert.AreEqual(new List<string> 
+            {
+                "parent",
+                "child1",
+                "child2",
+                "child2/child1",
+                "child2/child2",
+                "child3",
+            }, _loggedStoryNames);
         }
     }
 }
