@@ -239,8 +239,8 @@
                 using (Storytelling.StartNew("child1")) { }
                 using (Storytelling.StartNew("child2"))
                 {
-                    using (Storytelling.StartNew("child2/child1")) { }
-                    using (Storytelling.StartNew("child2/child2")) { }
+                    using (Storytelling.StartNew("child1")) { }
+                    using (Storytelling.StartNew("child2")) { }
                 }
                 using (Storytelling.StartNew("child3")) { }
             }
@@ -248,11 +248,11 @@
             CollectionAssert.AreEqual(new List<string> 
             {
                 "parent",
-                "child1",
-                "child2",
-                "child2/child1",
-                "child2/child2",
-                "child3",
+                "parent/child1",
+                "parent/child2",
+                "parent/child2/child1",
+                "parent/child2/child2",
+                "parent/child3",
             }, _loggedStoryNames);
         }
     }

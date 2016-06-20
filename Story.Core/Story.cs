@@ -29,14 +29,7 @@ namespace Story.Core
             this.log = new StoryLog(this);
             this.data = new StoryData(this);
 
-            if (this.Parent == null)
-            {
-                this.Name = name;
-            }
-            else
-            {
-                this.Name = this.Parent.Name + "/" + name;
-            }
+            this.Name = name;
         }
 
         public string Name
@@ -96,6 +89,12 @@ namespace Story.Core
             if (!this.notInContext)
             {
                 this.Attach();
+            }
+
+            // Update name if has parent
+            if (Parent != null)
+            {
+                this.Name = this.Parent.Name + "/" + this.Name;
             }
 
             this.StartDateTime = DateTime.UtcNow;
