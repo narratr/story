@@ -1,5 +1,7 @@
 @echo off
 
+nuget install Story.Core\packages.config -o packages
+
 pushd Story.Core
 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild /p:Configuration=Release 
 popd
