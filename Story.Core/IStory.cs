@@ -7,6 +7,34 @@ namespace Story.Core
     using System.Linq;
     using System.Threading.Tasks;
 
+    public enum StoryStatus
+    {
+        /// <summary>
+        /// The story is currently executing or in progress.
+        /// </summary>
+        Running,
+
+        /// <summary>
+        /// The story has finished executing successfully.
+        /// </summary>
+        Completed,
+
+        /// <summary>
+        /// The story has failed due to an error or exception.
+        /// </summary>
+        Failed,
+
+        /// <summary>
+        /// The story has timed out and was terminated due to exceeding the maximum allowed execution time.
+        /// </summary>
+        Timeout,
+
+        /// <summary>
+        /// The story was cancelled before completion, either by user request or system intervention.
+        /// </summary>
+        Cancelled
+    }
+
     public interface IStory : IDisposable
     {
         /// <summary>
@@ -33,6 +61,16 @@ namespace Story.Core
         /// Stops this story and invokes the stop handlers.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Report a failure for this story.
+        /// </summary>
+        void ReportFailed();
+
+        /// <summary>
+        /// Update the status for this story.
+        /// </summary>
+        void UpdateStatus(StoryStatus status);
 
         /// <summary>
         /// Gets the elapsed time-span.
@@ -69,5 +107,10 @@ namespace Story.Core
         /// Gets the story handler provider.
         /// </summary>
         IRuleset<IStory, IStoryHandler> HandlerProvider { get; }
+
+        /// <summary>
+        /// Gets the current status of the story.
+        /// </summary>
+        StoryStatus Status { get; }
     }
 }

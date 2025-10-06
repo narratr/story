@@ -244,6 +244,8 @@ namespace Story.Core
 
             public Task Task { get; set; }
 
+            public StoryStatus Status => throw new NotImplementedException();
+
             public void Start()
             {
             }
@@ -253,6 +255,14 @@ namespace Story.Core
             }
 
             public void Dispose()
+            {
+            }
+
+            public void ReportFailed()
+            {
+            }
+
+            public void UpdateStatus(StoryStatus status)
             {
             }
 

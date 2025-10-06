@@ -84,6 +84,12 @@ namespace Story.Core
             set;
         }
 
+        public StoryStatus Status
+        {
+            get;
+            private set;
+        }
+
         public void Start()
         {
             if (!this.notInContext)
@@ -110,6 +116,11 @@ namespace Story.Core
         {
             this.stopWatch.Stop();
 
+            if (this.Status == StoryStatus.Running)
+            {
+                this.Status = StoryStatus.Completed;
+            }
+
             try
             {
                 foreach (var handler in this.HandlerProvider.Fire(this))
@@ -124,6 +135,16 @@ namespace Story.Core
                     base.Detach();
                 }
             }
+        }
+
+        public void ReportFailed()
+        {
+            this.UpdateStatus(StoryStatus.Failed);
+        }
+
+        public void UpdateStatus(StoryStatus status)
+        {
+            this.Status = status;
         }
 
         protected virtual void Dispose(bool disposing)
