@@ -18,6 +18,10 @@
 
         void Critical(string format, params object[] args);
 
-        void Add(LogSeverity severity, string format, params object[] args);
+        void Add(LogSeverity severity, string format,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
+            params object[] args);
     }
 }

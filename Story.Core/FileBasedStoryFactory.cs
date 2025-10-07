@@ -6,6 +6,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Story.Core
 {
@@ -146,9 +147,12 @@ namespace Story.Core
             }
         }
 
-        public IStory CreateStory(string name)
+        public IStory CreateStory(string name,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return new Story(name, this.ruleset);
+            return new Story(name, this.ruleset, false, callerMemberName, callerFilePath, callerLineNumber);
         }
     }
 }

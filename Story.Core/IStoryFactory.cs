@@ -1,12 +1,16 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Story.Core
 {
     public interface IStoryFactory
     {
-        IStory CreateStory(string name);
+        IStory CreateStory(string name,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null);
     }
 
     public class BasicStoryFactory : IStoryFactory
@@ -18,9 +22,12 @@ namespace Story.Core
             this.ruleset = ruleset;
         }
 
-        public IStory CreateStory(string name)
+        public IStory CreateStory(string name,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return new Story(name, this.ruleset);
+            return new Story(name, this.ruleset, false, callerMemberName, callerFilePath, callerLineNumber);
         }
     }
 }

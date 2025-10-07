@@ -18,7 +18,8 @@ namespace Story.Core
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
-        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider, bool notInContext = false)
+        public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider, bool notInContext = false,
+            string callerMemberName = null, string callerFilePath = null, int? callerLineNumber = null)
         {
             Ensure.ArgumentNotEmpty(name, "name");
             Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
@@ -30,6 +31,11 @@ namespace Story.Core
             this.data = new StoryData(this);
 
             this.Name = name;
+            this.MethodName = callerMemberName;
+            this.LineNumber = callerLineNumber;
+
+            // Store the full file path
+            this.FilePath = callerFilePath;
         }
 
         public string Name
@@ -90,6 +96,30 @@ namespace Story.Core
             private set;
         }
 
+        public string ThreadName
+        {
+            get;
+            private set;
+        }
+
+        public string FilePath
+        {
+            get;
+            private set;
+        }
+
+        public string MethodName
+        {
+            get;
+            private set;
+        }
+
+        public int? LineNumber
+        {
+            get;
+            private set;
+        }
+
         public void Start()
         {
             if (!this.notInContext)
@@ -102,6 +132,12 @@ namespace Story.Core
             {
                 this.Name = this.Parent.Name + "/" + this.Name;
             }
+
+            // Capture thread name
+            var currentThread = System.Threading.Thread.CurrentThread;
+            this.ThreadName = !string.IsNullOrEmpty(currentThread.Name)
+                ? currentThread.Name
+                : currentThread.ManagedThreadId.ToString();
 
             this.StartDateTime = DateTime.UtcNow;
             this.stopWatch.Start();

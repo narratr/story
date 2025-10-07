@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Story.Core
 {
@@ -7,31 +8,37 @@ namespace Story.Core
     using System.Linq;
     using System.Threading.Tasks;
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum StoryStatus
     {
         /// <summary>
         /// The story is currently executing or in progress.
         /// </summary>
+        [JsonProperty("completed")]
         Running,
 
         /// <summary>
         /// The story has finished executing successfully.
         /// </summary>
+        [JsonProperty("completed")]
         Completed,
 
         /// <summary>
         /// The story has failed due to an error or exception.
         /// </summary>
+        [JsonProperty("failed")]
         Failed,
 
         /// <summary>
         /// The story has timed out and was terminated due to exceeding the maximum allowed execution time.
         /// </summary>
+        [JsonProperty("timeout")]
         Timeout,
 
         /// <summary>
         /// The story was cancelled before completion, either by user request or system intervention.
         /// </summary>
+        [JsonProperty("cancelled")]
         Cancelled
     }
 
@@ -112,5 +119,25 @@ namespace Story.Core
         /// Gets the current status of the story.
         /// </summary>
         StoryStatus Status { get; }
+
+        /// <summary>
+        /// Gets the thread name where the story was created.
+        /// </summary>
+        string ThreadName { get; }
+
+        /// <summary>
+        /// Gets the file path where the story was created.
+        /// </summary>
+        string FilePath { get; }
+
+        /// <summary>
+        /// Gets the method name where the story was created.
+        /// </summary>
+        string MethodName { get; }
+
+        /// <summary>
+        /// Gets the line number where the story was created.
+        /// </summary>
+        int? LineNumber { get; }
     }
 }

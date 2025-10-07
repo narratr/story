@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
     public static class StoryExtensions
@@ -16,11 +17,14 @@
         /// <returns>
         /// The new started story.
         /// </returns>
-        public static IStory StartNew(this IStoryFactory storyFactory, string name)
+        public static IStory StartNew(this IStoryFactory storyFactory, string name,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
             Ensure.ArgumentNotNull(storyFactory, "storyFactory");
 
-            IStory story = storyFactory.CreateStory(name);
+            IStory story = storyFactory.CreateStory(name, callerMemberName, callerFilePath, callerLineNumber);
             story.Start();
 
             return story;
@@ -36,12 +40,15 @@
         /// <returns>
         /// The result.
         /// </returns>
-        public static T StartNew<T>(this IStoryFactory storyFactory, string name, Func<T> func)
+        public static T StartNew<T>(this IStoryFactory storyFactory, string name, Func<T> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
             Ensure.ArgumentNotNull(storyFactory, "storyFactory");
             Ensure.ArgumentNotNull(func, "func");
 
-            IStory story = storyFactory.CreateStory(name);
+            IStory story = storyFactory.CreateStory(name, callerMemberName, callerFilePath, callerLineNumber);
 
             try
             {
@@ -66,12 +73,15 @@
         /// <param name="storyFactory">The story factory.</param>
         /// <param name="name">The name.</param>
         /// <param name="action">Action to observe.</param>
-        public static void StartNew(this IStoryFactory storyFactory, string name, Action action)
+        public static void StartNew(this IStoryFactory storyFactory, string name, Action action,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
             Ensure.ArgumentNotNull(storyFactory, "storyFactory");
             Ensure.ArgumentNotNull(action, "action");
 
-            IStory story = storyFactory.CreateStory(name);
+            IStory story = storyFactory.CreateStory(name, callerMemberName, callerFilePath, callerLineNumber);
 
             try
             {
@@ -100,12 +110,15 @@
         /// <returns>
         /// The task observed by this story.
         /// </returns>
-        public static Task<T> StartNewAsync<T>(this IStoryFactory storyFactory, string name, Func<Task<T>> func)
+        public static Task<T> StartNewAsync<T>(this IStoryFactory storyFactory, string name, Func<Task<T>> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
             Ensure.ArgumentNotNull(storyFactory, "storyFactory");
             Ensure.ArgumentNotNull(func, "func");
 
-            IStory story = storyFactory.CreateStory(name);
+            IStory story = storyFactory.CreateStory(name, callerMemberName, callerFilePath, callerLineNumber);
 
             story.Start();
 
@@ -124,12 +137,15 @@
         /// <returns>
         /// The task observed by this story.
         /// </returns>
-        public static Task StartNewAsync(this IStoryFactory storyFactory, string name, Func<Task> func)
+        public static Task StartNewAsync(this IStoryFactory storyFactory, string name, Func<Task> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
             Ensure.ArgumentNotNull(storyFactory, "storyFactory");
             Ensure.ArgumentNotNull(func, "func");
 
-            IStory story = storyFactory.CreateStory(name);
+            IStory story = storyFactory.CreateStory(name, callerMemberName, callerFilePath, callerLineNumber);
 
             story.Start();
 

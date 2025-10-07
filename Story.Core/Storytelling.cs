@@ -244,7 +244,15 @@ namespace Story.Core
 
             public Task Task { get; set; }
 
-            public StoryStatus Status => throw new NotImplementedException();
+            public StoryStatus Status { get; set; }
+
+            public string ThreadName { get; set; }
+
+            public string FilePath { get; set; }
+
+            public string MethodName { get; set; }
+
+            public int? LineNumber { get; set; }
 
             public void Start()
             {
@@ -296,7 +304,11 @@ namespace Story.Core
             {
                 private List<IStoryLogEntry> emptyList = new List<IStoryLogEntry>();
 
-                public void Add(LogSeverity severity, string format, params object[] args)
+                public void Add(LogSeverity severity, string format,
+                    [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+                    [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
+                    params object[] args)
                 {
                 }
 
