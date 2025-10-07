@@ -14,6 +14,7 @@
         public StoryData(IStory story)
         {
             Ensure.ArgumentNotNull(story, "story");
+            IgnoreDuplicates = true;
             this.Story = story;
         }
 
@@ -41,7 +42,7 @@
                 }
 
                 this.entries[key] = value;
-                this.Story.Log.Debug("Added key '{0}' to data.", key);
+                // this.Story.Log.Debug("Added key '{0}' to data.", key);
             }
         }
 

@@ -1,4 +1,3 @@
-using Microsoft.WindowsAzure.Storage.Blob;
 using Story.Core;
 using Story.Core.Handlers;
 using System;

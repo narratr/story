@@ -1,11 +1,12 @@
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure;
+using Azure.Data.Tables;
 using Story.Core;
 using Story.Core.Utils;
 using System;
 
 namespace Story.Ext.Handlers
 {
-    public class StoryTableEntity : TableEntity
+    public class StoryTableEntity : ITableEntity
     {
         public static StoryTableEntity ToStoryTableEntity(IStory story)
         {
@@ -27,6 +28,11 @@ namespace Story.Ext.Handlers
 
             return storyTableEntity;
         }
+
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         public string Name { get; set; }
 

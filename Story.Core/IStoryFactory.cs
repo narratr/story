@@ -11,6 +11,8 @@ namespace Story.Core
             [CallerMemberName] string callerMemberName = null,
             [CallerFilePath] string callerFilePath = null,
             [CallerLineNumber] int? callerLineNumber = null);
+
+        IRuleset<IStory, IStoryHandler> GetRuleset();
     }
 
     public class BasicStoryFactory : IStoryFactory
@@ -28,6 +30,11 @@ namespace Story.Core
             [CallerLineNumber] int? callerLineNumber = null)
         {
             return new Story(name, this.ruleset, false, callerMemberName, callerFilePath, callerLineNumber);
+        }
+
+        public IRuleset<IStory, IStoryHandler> GetRuleset()
+        {
+            return this.ruleset;
         }
     }
 }

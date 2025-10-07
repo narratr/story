@@ -255,5 +255,98 @@
                 "parent/child3",
             }, _loggedStoryNames);
         }
+
+        [Test]
+        public void onetime_story_is_created_for_logging_when_no_story_exists()
+        {
+            var handlerRules = new Ruleset<IStory, IStoryHandler>();
+            var handlerInvoked = false;
+            
+            handlerRules.Rules.Add(new PredicateRule(
+                story => true,
+                story => new ActionHandler("test_handler", 
+                    s => { /* OnStart - do nothing */ }, 
+                    s => { handlerInvoked = true; })));
+
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
+
+            // Clear any existing story context
+            Story.FromContext()?.Detach();
+
+            // Verify no current story exists
+            Assert.IsFalse(Storytelling.HasCurrentStory);
+
+            // Log something - this should create OneTimeStory and auto-stop after first log
+            Storytelling.Info("Test message");
+
+            // Verify handler was invoked (OneTimeStory auto-stops after first log)
+            Assert.IsTrue(handlerInvoked);
+        }
+
+        [Test]
+        public void current_returns_dummy_story_when_no_story_exists()
+        {
+            // Clear any existing story context
+            Story.FromContext()?.Detach();
+
+            // Access Current when no story exists - should return DummyStory
+            var currentStory = Storytelling.Current;
+            Assert.IsNotNull(currentStory);
+            Assert.AreEqual("", currentStory.Name); // DummyStory has empty name
+            // Note: Can't test exact type since DummyStory is private, but we can test behavior
+            Assert.IsFalse(Storytelling.HasCurrentStory);
+        }
+
+        [Test]
+        public void onetime_story_auto_stops_after_first_log_entry()
+        {
+            var handlerRules = new Ruleset<IStory, IStoryHandler>();
+            var startInvoked = false;
+            var stopInvoked = false;
+            
+            handlerRules.Rules.Add(new PredicateRule(
+                story => true,
+                story => new ActionHandler("test_handler", 
+                    s => { startInvoked = true; }, 
+                    s => { stopInvoked = true; })));
+
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
+
+            // Clear any existing story context
+            Story.FromContext()?.Detach();
+
+            // Log something - this should create OneTimeStory and auto-stop
+            Storytelling.Info("Test message");
+            
+            // Verify both start and stop handlers were called
+            Assert.IsTrue(startInvoked);
+            Assert.IsTrue(stopInvoked);
+        }
+
+        [Test]
+        public void onetime_story_auto_stops_after_first_data_entry()
+        {
+            var handlerRules = new Ruleset<IStory, IStoryHandler>();
+            var startInvoked = false;
+            var stopInvoked = false;
+            
+            handlerRules.Rules.Add(new PredicateRule(
+                story => true,
+                story => new ActionHandler("test_handler", 
+                    s => { startInvoked = true; }, 
+                    s => { stopInvoked = true; })));
+
+            Storytelling.Factory = new BasicStoryFactory(handlerRules);
+
+            // Clear any existing story context
+            Story.FromContext()?.Detach();
+
+            // Add data - this should create OneTimeStory and auto-stop
+            Storytelling.Data["testKey"] = "testValue";
+            
+            // Verify both start and stop handlers were called
+            Assert.IsTrue(startInvoked);
+            Assert.IsTrue(stopInvoked);
+        }
     }
 }

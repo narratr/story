@@ -1,16 +1,18 @@
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure;
+using Azure.Data.Tables;
 using Story.Core;
 using Story.Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Story.Ext.Handlers
 {
     public class AzureTableStorageHandler : BufferedHandler
     {
         private readonly AzureTableStorageHandlerConfiguration configuration;
-        private CloudTable storiesTable;
+        private TableClient storiesTable;
 
         public AzureTableStorageHandler(string name, AzureTableStorageHandlerConfiguration configuration)
             : base(name, configuration.BatchTimeDelay, configuration.BatchSize)
@@ -27,9 +29,7 @@ namespace Story.Ext.Handlers
                 throw new InvalidOperationException("Missing StoryTableStorage connection string");
             }
 
-            CloudStorageAccount account = CloudStorageAccount.Parse(this.configuration.ConnectionString);
-            var tableClient = account.CreateCloudTableClient();
-            this.storiesTable = tableClient.GetTableReference(this.configuration.TableName);
+            this.storiesTable = new TableClient(this.configuration.ConnectionString, this.configuration.TableName);
             this.storiesTable.CreateIfNotExists();
         }
 
@@ -40,21 +40,21 @@ namespace Story.Ext.Handlers
 
         private void PersistStoriesAsync(IList<IStory> stories)
         {
-            var tableBatchOperation = new TableBatchOperation();
+            var tableEntities = new List<StoryTableEntity>();
             foreach (var story in stories)
             {
-                tableBatchOperation.Add(TableOperation.Insert(StoryTableEntity.ToStoryTableEntity(story)));
+                tableEntities.Add(StoryTableEntity.ToStoryTableEntity(story));
             }
 
             try
             {
                 Retrier.Retry<object>(() =>
                 {
-                    this.storiesTable.ExecuteBatch(tableBatchOperation);
+                    this.storiesTable.SubmitTransaction(tableEntities.Select(entity => new TableTransactionAction(TableTransactionActionType.Add, entity)).ToList());
                     return null;
                 });
             }
-            catch (StorageException)
+            catch (RequestFailedException)
             {
             }
         }

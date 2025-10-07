@@ -1,8 +1,11 @@
 ﻿using Story.Core.Handlers;
 using Story.Core.Rules;
+using Story.Core.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -40,20 +43,31 @@ namespace Story.Core
 
                 // var stackTrace = new StackTrace(1);
                 // Trace.TraceWarning("No story in context, caller call stack is {0}", stackTrace);
-                // return new DummyStory();
+                return new DummyStory();
 
-                // return new OneTimeStory(DefaultStoryRulesetProvider.GetRuleset());
+                //return new OneTimeStory(Factory.GetRuleset());
 
                 //if (!this.ignoreEmptyStory)
-                {
-                    throw new InvalidOperationException("No story in context");
-                }
+                //{
+                //    throw new InvalidOperationException("No story in context");
+                //}
 
                 //return new ContextStory.DummyStory();
             }
         }
 
         public static IStoryFactory Factory { get; set; }
+
+        /// <summary>
+        /// Checks if there is a current story available in the context.
+        /// </summary>
+        public static bool HasCurrentStory
+        {
+            get
+            {
+                return Story.FromContext() as IStory != null;
+            }
+        }
 
         public static IStory IgnoreEmptyStory
         {
@@ -68,7 +82,7 @@ namespace Story.Core
         /// </summary>
         public static void Debug(string format, params object[] args)
         {
-            Current.Log.Debug(format, args);
+            GetStoryForLogging().Log.Debug(format, args);
         }
 
         /// <summary>
@@ -76,7 +90,7 @@ namespace Story.Core
         /// </summary>
         public static void Info(string format, params object[] args)
         {
-            Current.Log.Info(format, args);
+            GetStoryForLogging().Log.Info(format, args);
         }
 
         /// <summary>
@@ -84,7 +98,7 @@ namespace Story.Core
         /// </summary>
         public static void Warn(string format, params object[] args)
         {
-            Current.Log.Warn(format, args);
+            GetStoryForLogging().Log.Warn(format, args);
         }
 
         /// <summary>
@@ -92,7 +106,7 @@ namespace Story.Core
         /// </summary>
         public static void Error(string format, params object[] args)
         {
-            Current.Log.Error(format, args);
+            GetStoryForLogging().Log.Error(format, args);
         }
 
         /// <summary>
@@ -100,12 +114,44 @@ namespace Story.Core
         /// </summary>
         public static void Critical(string format, params object[] args)
         {
-            Current.Log.Critical(format, args);
+            GetStoryForLogging().Log.Critical(format, args);
         }
 
         public static IStoryData Data
         {
-            get { return Current.Data; }
+            get { return GetStoryForData().Data; }
+        }
+
+        /// <summary>
+        /// Gets a story for logging operations. Returns the current story if it exists,
+        /// otherwise creates a OneTimeStory that will auto-stop after the first log entry.
+        /// </summary>
+        private static IStory GetStoryForLogging()
+        {
+            var story = Story.FromContext() as IStory;
+            if (story != null)
+            {
+                return story;
+            }
+
+            // Create a OneTimeStory for logging when no story exists
+            return new OneTimeStory(Factory.GetRuleset());
+        }
+
+        /// <summary>
+        /// Gets a story for data operations. Returns the current story if it exists,
+        /// otherwise creates a OneTimeStory that will auto-stop after the first data entry.
+        /// </summary>
+        private static IStory GetStoryForData()
+        {
+            var story = Story.FromContext() as IStory;
+            if (story != null)
+            {
+                return story;
+            }
+
+            // Create a OneTimeStory for data when no story exists
+            return new OneTimeStory(Factory.GetRuleset());
         }
 
         public static IStory StartNew([CallerMemberName]string name = "")
@@ -163,6 +209,154 @@ namespace Story.Core
         public static Task StartNewAsync(Func<Task> func, [CallerMemberName]string name = "")
         {
             return Factory.StartNewAsync(name, func);
+        }
+
+        private class OneTimeStory : IStory
+        {
+            private readonly IRuleset<IStory, IStoryHandler> handlerProvider;
+            private readonly Stopwatch stopWatch;
+            private readonly IStoryLog log;
+            private readonly IStoryData data;
+            private bool hasLogged;
+            private bool isDisposed;
+
+            public OneTimeStory(IRuleset<IStory, IStoryHandler> handlerProvider)
+            {
+                Ensure.ArgumentNotNull(handlerProvider, "handlerProvider");
+                
+                this.handlerProvider = handlerProvider;
+                this.stopWatch = new Stopwatch();
+                this.log = new OneTimeStoryLog(this);
+                this.data = new OneTimeStoryData(this);
+                this.Name = "OneTimeStory";
+                this.InstanceId = Guid.NewGuid().ToString();
+                this.StartDateTime = DateTime.UtcNow;
+                this.Status = StoryStatus.Running;
+                this.ThreadName = System.Threading.Thread.CurrentThread.ManagedThreadId.ToString();
+                
+                // Start the story immediately
+                this.stopWatch.Start();
+                this.Start();
+            }
+
+            public string Name { get; private set; }
+            public string InstanceId { get; private set; }
+            public Task Task { get; set; }
+            public DateTime StartDateTime { get; private set; }
+            public TimeSpan Elapsed => this.stopWatch.Elapsed;
+            public StoryStatus Status { get; private set; }
+            public string ThreadName { get; private set; }
+            public string FilePath { get; set; }
+            public string MethodName { get; set; }
+            public int? LineNumber { get; set; }
+
+            public IRuleset<IStory, IStoryHandler> HandlerProvider => this.handlerProvider;
+            public IStory Parent => null;
+            public IEnumerable<IStory> Children => Enumerable.Empty<IStory>();
+            public IStoryData Data => this.data;
+            public IStoryLog Log => this.log;
+
+            public void Start()
+            {
+                if (this.isDisposed) return;
+
+                foreach (var handler in this.handlerProvider.Fire(this))
+                {
+                    handler.OnStart(this);
+                }
+            }
+
+            public void Stop()
+            {
+                if (this.isDisposed) return;
+
+                this.stopWatch.Stop();
+                this.Status = StoryStatus.Completed;
+
+                foreach (var handler in this.handlerProvider.Fire(this))
+                {
+                    handler.OnStop(this);
+                }
+
+                this.isDisposed = true;
+            }
+
+            public void ReportFailed()
+            {
+            }
+
+            public void UpdateStatus(StoryStatus status)
+            {
+            }
+
+            public void Dispose()
+            {
+                if (this.isDisposed) return;
+
+                if (!this.hasLogged)
+                {
+                    this.hasLogged = true;
+                    this.Stop();
+                }
+            }
+
+            private class OneTimeStoryData : IStoryData
+            {
+                private readonly OneTimeStory story;
+
+                public OneTimeStoryData(OneTimeStory story)
+                {
+                    this.story = story;
+                }
+
+                public object this[string key]
+                {
+                    get
+                    {
+                        return null;
+                    }
+                    set
+                    {
+                        // Log the data addition and auto-stop after first data entry
+                        this.story.Log.Info("Added key '{0}' with value '{1}' to data.", key, value);
+                    }
+                }
+                
+                IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+                {
+                    return (IEnumerator<KeyValuePair<string, object>>)Array.Empty<KeyValuePair<string, object>>().GetEnumerator();
+                }
+
+                IEnumerator IEnumerable.GetEnumerator()
+                {
+                    return Array.Empty<KeyValuePair<string, object>>().GetEnumerator();
+                }
+            }
+
+            private class OneTimeStoryLog : StoryLog
+            {
+                private readonly OneTimeStory story;
+
+                public OneTimeStoryLog(OneTimeStory story) : base(story)
+                {
+                    this.story = story;
+                }
+
+                public override void Add(LogSeverity severity, string format,
+                    [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+                    [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
+                    params object[] args)
+                {
+                    // Auto-stop after first log entry
+                    if (!this.story.hasLogged)
+                    {
+                        base.Add(severity, format, callerMemberName, callerFilePath, callerLineNumber, args);
+                        this.story.hasLogged = true;
+                        this.story.Stop();
+                    }
+                }
+            }
         }
 
         private class DummyStory : IStory
