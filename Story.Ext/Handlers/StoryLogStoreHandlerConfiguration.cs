@@ -12,7 +12,7 @@ namespace Story.Ext.Handlers
         {
             // Default batch settings
             BatchSize = 200;
-            BatchTimeDelay = TimeSpan.FromSeconds(60);
+            BatchTimeDelay = TimeSpan.FromSeconds(20);
 
             // Default retry settings
             RetryCount = 3;

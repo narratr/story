@@ -8,20 +8,22 @@
 
     public interface IStoryLog : IEnumerable<IStoryLogEntry>
     {
-        void Debug(string format, params object[] args);
+        void Debug(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
 
-        void Info(string format, params object[] args);
+        void Info(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
 
-        void Warn(string format, params object[] args);
+        void Warn(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
 
-        void Error(string format, params object[] args);
+        void Error(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
 
-        void Critical(string format, params object[] args);
+        void Critical(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
 
-        void Add(LogSeverity severity, string format,
+        void Add(
+            LogSeverity severity,
+            string format,
+            object[] args = null,
             [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
             [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
-            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
-            params object[] args);
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null);
     }
 }

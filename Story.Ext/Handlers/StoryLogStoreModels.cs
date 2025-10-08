@@ -82,9 +82,8 @@ namespace Story.Ext.Handlers
         public Dictionary<string, object> Data { get; set; }
         
         [JsonProperty("status")]
-        [JsonConverter(typeof(StringEnumConverter))]
         public Story.Core.StoryStatus Status { get; set; }
-        
+
         [JsonProperty("thread_name")]
         public string ThreadName { get; set; }
         
@@ -107,7 +106,6 @@ namespace Story.Ext.Handlers
         public string StoryInstanceId { get; set; }
         
         [JsonProperty("severity")]
-        [JsonConverter(typeof(StringEnumConverter))]
         public Story.Core.LogSeverity Severity { get; set; }
         
         [JsonProperty("message")]

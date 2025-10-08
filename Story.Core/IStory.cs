@@ -6,6 +6,7 @@ namespace Story.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -14,31 +15,31 @@ namespace Story.Core
         /// <summary>
         /// The story is currently executing or in progress.
         /// </summary>
-        [JsonProperty("completed")]
+        [EnumMember(Value = "running")]
         Running,
 
         /// <summary>
         /// The story has finished executing successfully.
         /// </summary>
-        [JsonProperty("completed")]
+        [EnumMember(Value = "completed")]
         Completed,
 
         /// <summary>
         /// The story has failed due to an error or exception.
         /// </summary>
-        [JsonProperty("failed")]
+        [EnumMember(Value = "failed")]
         Failed,
 
         /// <summary>
         /// The story has timed out and was terminated due to exceeding the maximum allowed execution time.
         /// </summary>
-        [JsonProperty("timeout")]
+        [EnumMember(Value = "timeout")]
         Timeout,
 
         /// <summary>
         /// The story was cancelled before completion, either by user request or system intervention.
         /// </summary>
-        [JsonProperty("cancelled")]
+        [EnumMember(Value = "cancelled")]
         Cancelled
     }
 

@@ -80,41 +80,88 @@ namespace Story.Core
         /// <summary>
         /// Write to the log of the story with debug log severity
         /// </summary>
-        public static void Debug(string format, params object[] args)
+        public static void Debug(
+            string format,
+            object[] args = null,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
         {
-            GetStoryForLogging().Log.Debug(format, args);
+            GetStoryForLogging().Log.Debug(format, args, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Write to the log of the story with information log severity
         /// </summary>
-        public static void Info(string format, params object[] args)
+        public static void Info(
+            string format,
+            object[] args = null,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = "",
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0)
         {
-            GetStoryForLogging().Log.Info(format, args);
+            GetStoryForLogging().Log.Info(format, args, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Write to the log of the story with warning log severity
         /// </summary>
-        public static void Warn(string format, params object[] args)
+        public static void Warn(
+            string format,
+            object[] args = null,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
         {
-            GetStoryForLogging().Log.Warn(format, args);
+            GetStoryForLogging().Log.Warn(format, args, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Write to the log of the story with error log severity
         /// </summary>
-        public static void Error(string format, params object[] args)
+        public static void Error(
+            string format,
+            object[] args = null,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
         {
-            GetStoryForLogging().Log.Error(format, args);
+            GetStoryForLogging().Log.Error(format, args, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Write to the log of the story with critical log severity
         /// </summary>
-        public static void Critical(string format, params object[] args)
+        public static void Critical(
+            string format,
+            object[] args = null,
+            [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
         {
-            GetStoryForLogging().Log.Critical(format, args);
+            GetStoryForLogging().Log.Critical(format, args, callerMemberName, callerFilePath, callerLineNumber);
+        }
+
+        /// <summary>
+        /// Report a failure for the current story with an exception.
+        /// Sets the story status to Failed and stores the exception details in the story data.
+        /// </summary>
+        public static void ReportFailed(Exception exception)
+        {
+            var story = Current;
+            story.ReportFailed();
+            story.Data["error"] = exception;
+        }
+
+        /// <summary>
+        /// Report a failure for the current story with an error message.
+        /// Sets the story status to Failed and stores the error message in the story data.
+        /// </summary>
+        public static void ReportFailed(string errorMessage)
+        {
+            var story = Current;
+            story.ReportFailed();
+            story.Data["error"] = errorMessage;
         }
 
         public static IStoryData Data
@@ -154,61 +201,104 @@ namespace Story.Core
             return new OneTimeStory(Factory.GetRuleset());
         }
 
-        public static IStory StartNew([CallerMemberName]string name = "")
+        public static IStory StartNew(
+            [CallerMemberName]string name = "",
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNew(name);
+            return Factory.StartNew(name, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Invokes the task to be observed by this story.
         /// </summary>
-        public static T StartNew<T>(Func<T> func, [CallerMemberName]string name = "")
+        public static T StartNew<T>(
+            Func<T> func,
+            [CallerMemberName]string name = "",
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNew(name, func);
+            return Factory.StartNew(name, func, callerMemberName, callerFilePath, callerLineNumber);
         }
 
-        public static T StartNew<T>(string name, Func<T> func)
+        public static T StartNew<T>(
+            string name,
+            Func<T> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNew(name, func);
-        }
-
-        /// <summary>
-        /// Invokes the task to be observed by this story.
-        /// </summary>
-        public static void StartNew(string name, Action action)
-        {
-            Factory.StartNew(name, action);
-        }
-
-        public static void StartNew(Action action, [CallerMemberName]string name = "")
-        {
-            Factory.StartNew(name, action);
+            return Factory.StartNew(name, func, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Invokes the task to be observed by this story.
         /// </summary>
-        public static Task<T> StartNewAsync<T>(string name, Func<Task<T>> func)
+        public static void StartNew(string name,
+            Action action,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNewAsync(name, func);
+            Factory.StartNew(name, action, callerMemberName, callerFilePath, callerLineNumber);
         }
 
-        public static Task<T> StartNewAsync<T>(Func<Task<T>> func, [CallerMemberName]string name = "")
+        public static void StartNew(
+            Action action,
+            [CallerMemberName]string name = "",
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNewAsync(name, func);
+            Factory.StartNew(name, action, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         /// <summary>
         /// Invokes the task to be observed by this story.
         /// </summary>
-        public static Task StartNewAsync(string name, Func<Task> func)
+        public static Task<T> StartNewAsync<T>(
+            string name,
+            Func<Task<T>> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNewAsync(name, func);
+            return Factory.StartNewAsync(name, func, callerMemberName, callerFilePath, callerLineNumber);
         }
 
-        public static Task StartNewAsync(Func<Task> func, [CallerMemberName]string name = "")
+        public static Task<T> StartNewAsync<T>(
+            Func<Task<T>> func,
+            [CallerMemberName]string name = "",
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
         {
-            return Factory.StartNewAsync(name, func);
+            return Factory.StartNewAsync(name, func, callerMemberName, callerFilePath, callerLineNumber);
+        }
+
+        /// <summary>
+        /// Invokes the task to be observed by this story.
+        /// </summary>
+        public static Task StartNewAsync(
+            string name,
+            Func<Task> func,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
+        {
+            return Factory.StartNewAsync(name, func, callerMemberName, callerFilePath, callerLineNumber);
+        }
+
+        public static Task StartNewAsync(
+            Func<Task> func,
+            [CallerMemberName]string name = "",
+            [CallerMemberName] string callerMemberName = null,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerLineNumber] int? callerLineNumber = null)
+        {
+            return Factory.StartNewAsync(name, func, callerMemberName, callerFilePath, callerLineNumber);
         }
 
         private class OneTimeStory : IStory
@@ -229,7 +319,7 @@ namespace Story.Core
                 this.log = new OneTimeStoryLog(this);
                 this.data = new OneTimeStoryData(this);
                 this.Name = "OneTimeStory";
-                this.InstanceId = Guid.NewGuid().ToString();
+                this.InstanceId = InstanceIdGenerator.GenerateInstanceId("OneTimeStory");
                 this.StartDateTime = DateTime.UtcNow;
                 this.Status = StoryStatus.Running;
                 this.ThreadName = System.Threading.Thread.CurrentThread.ManagedThreadId.ToString();
@@ -243,18 +333,36 @@ namespace Story.Core
             public string InstanceId { get; private set; }
             public Task Task { get; set; }
             public DateTime StartDateTime { get; private set; }
-            public TimeSpan Elapsed => this.stopWatch.Elapsed;
+            public TimeSpan Elapsed
+            {
+                get { return this.stopWatch.Elapsed; }
+            }
             public StoryStatus Status { get; private set; }
             public string ThreadName { get; private set; }
             public string FilePath { get; set; }
             public string MethodName { get; set; }
             public int? LineNumber { get; set; }
 
-            public IRuleset<IStory, IStoryHandler> HandlerProvider => this.handlerProvider;
-            public IStory Parent => null;
-            public IEnumerable<IStory> Children => Enumerable.Empty<IStory>();
-            public IStoryData Data => this.data;
-            public IStoryLog Log => this.log;
+            public IRuleset<IStory, IStoryHandler> HandlerProvider
+            {
+                get { return this.handlerProvider; }
+            }
+            public IStory Parent
+            {
+                get { return null; }
+            }
+            public IEnumerable<IStory> Children
+            {
+                get { return Enumerable.Empty<IStory>(); }
+            }
+            public IStoryData Data
+            {
+                get { return this.data; }
+            }
+            public IStoryLog Log
+            {
+                get { return this.log; }
+            }
 
             public void Start()
             {
@@ -318,7 +426,7 @@ namespace Story.Core
                     set
                     {
                         // Log the data addition and auto-stop after first data entry
-                        this.story.Log.Info("Added key '{0}' with value '{1}' to data.", key, value);
+                        this.story.Log.Info($"Added key '{key}' with value '${value}' to data.");
                     }
                 }
                 
@@ -343,15 +451,15 @@ namespace Story.Core
                 }
 
                 public override void Add(LogSeverity severity, string format,
+                    object[] args = null,
                     [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
                     [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
-                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
-                    params object[] args)
+                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                     // Auto-stop after first log entry
                     if (!this.story.hasLogged)
                     {
-                        base.Add(severity, format, callerMemberName, callerFilePath, callerLineNumber, args);
+                        base.Add(severity, format, args, callerMemberName, callerFilePath, callerLineNumber);
                         this.story.hasLogged = true;
                         this.story.Stop();
                     }
@@ -498,23 +606,22 @@ namespace Story.Core
             {
                 private List<IStoryLogEntry> emptyList = new List<IStoryLogEntry>();
 
-                public void Add(LogSeverity severity, string format,
+                public void Add(LogSeverity severity, string format, object[] args = null,
                     [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null,
                     [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
-                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null,
-                    params object[] args)
+                    [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 
-                public void Critical(string format, params object[] args)
+                public void Critical(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 
-                public void Debug(string format, params object[] args)
+                public void Debug(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 
-                public void Error(string format, params object[] args)
+                public void Error(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 
@@ -523,11 +630,11 @@ namespace Story.Core
                     return emptyList.GetEnumerator();
                 }
 
-                public void Info(string format, params object[] args)
+                public void Info(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 
-                public void Warn(string format, params object[] args)
+                public void Warn(string format, object[] args = null, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
                 {
                 }
 

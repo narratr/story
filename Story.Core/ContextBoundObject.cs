@@ -8,6 +8,7 @@ namespace Story.Core
     using System.Linq;
     using System.Runtime.Remoting.Messaging;
     using System.Web;
+    using Utils;
 
     [Serializable]
     public abstract class ContextBoundObject<T>
@@ -22,7 +23,7 @@ namespace Story.Core
         /// <param name="instanceId">The instance identifier.</param>
         protected ContextBoundObject()
         {
-            this.InstanceId = Guid.NewGuid().ToString();
+            this.InstanceId = InstanceIdGenerator.GenerateInstanceId("OBJ");
         }
 
         /// <summary>

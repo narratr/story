@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -77,6 +78,7 @@
     <Compile Include="StoryLog.cs" />
     <Compile Include="StoryLogEntry.cs" />
     <Compile Include="Utils\Ensure.cs" />
+    <Compile Include="Utils\InstanceIdGenerator.cs" />
     <Compile Include="Utils\JsonExtensions.cs" />
     <Compile Include="Utils\Retrier.cs" />
   </ItemGroup>

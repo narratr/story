@@ -4,6 +4,7 @@
     using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// An interface describing a log entry.
@@ -50,39 +51,33 @@
     public enum LogSeverity
     {
         /// <summary>
-        /// Unspecified log level.
-        /// </summary>
-        [JsonProperty("debug")]
-        Unspecified,
-
-        /// <summary>
         /// Debug log level.
         /// </summary>
-        [JsonProperty("debug")]
+        [EnumMember(Value = "debug")]
         Debug,
 
         /// <summary>
         /// Information log level.
         /// </summary>
-        [JsonProperty("info")]
+        [EnumMember(Value = "info")]
         Info,
 
         /// <summary>
         /// Warning log level.
         /// </summary>
-        [JsonProperty("warn")]
+        [EnumMember(Value = "warn")]
         Warning,
 
         /// <summary>
         /// Error log level.
         /// </summary>
-        [JsonProperty("error")]
+        [EnumMember(Value = "error")]
         Error,
 
         /// <summary>
         /// Critical log level.
         /// </summary>
-        [JsonProperty("critical")]
+        [EnumMember(Value = "critical")]
         Critical,
     }
 }

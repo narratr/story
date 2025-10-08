@@ -98,7 +98,7 @@ namespace Story.Core
                             var newRuleset =
                                 results.CompiledAssembly.CreateInstance(rulesetType.FullName, false, BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public, null, args, null, null) as IRuleset<IStory, IStoryHandler>;
                             this.ruleset = newRuleset;
-                            story.Log.Info("Ruleset updated to {0}", rulesetType.Name);
+                            story.Log.Info($"Ruleset updated to {rulesetType.Name}");
                         }
                         else
                         {

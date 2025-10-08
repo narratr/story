@@ -44,6 +44,14 @@ namespace Story.Ext.Handlers
             this.httpClient.DefaultRequestHeaders.Add("X-API-Key", configuration.ApiKey);
         }
 
+        public override void OnStop(IStory story)
+        {
+            if (story != null && story.IsRoot())
+            {
+                base.OnStop(story);
+            }
+        }
+
         protected override void OnStoriesComplete(IList<IStory> stories)
         {
             // Fire and forget - don't block the calling thread
@@ -70,15 +78,16 @@ namespace Story.Ext.Handlers
                 }
 
                 var json = JsonConvert.SerializeObject(batchRequest);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 // Use retry logic
-                var retryResult = await Retrier.RetryAsync<bool>(async () =>
+                return await Retrier.RetryAsync<SendStoriesResult>(async () =>
                 {
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
                     var response = await httpClient.PostAsync(this.url, content);
                     if (response.IsSuccessStatusCode)
                     {
-                        return true;
+                        return SendStoriesResult.Success();
                     }
 
                     if ((int)response.StatusCode >= 500 || (int)response.StatusCode == 429)
@@ -89,16 +98,14 @@ namespace Story.Ext.Handlers
 
                     // For non-retryable errors, throw exception to exit retry loop
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    var errorMessage = string.Format("HTTP {0}: {1}", (int)response.StatusCode, response.ReasonPhrase);
+                    var errorMessage = string.Format("HTTP {0}: {1}", (int)response.StatusCode, responseContent);
                     if (!string.IsNullOrEmpty(responseContent))
                     {
                         errorMessage += string.Format(" - {0}", responseContent);
                     }
 
-                    throw new InvalidOperationException(errorMessage);
+                    return SendStoriesResult.Error(errorMessage);
                 }, configuration.RetryCount, configuration.RetryTimeout);
-
-                return SendStoriesResult.Success();
             }
             catch (Exception ex)
             {
@@ -117,17 +124,17 @@ namespace Story.Ext.Handlers
                 }
             };
 
-            // Flatten all stories (root + all children)
-            var allStories = new List<IStory>();
+            // Flatten all stories (root + all children) with parent tracking
+            var allStoriesWithParents = new List<(IStory story, IStory parent)>();
             foreach (var story in stories)
             {
-                allStories.AddRange(FlattenStory(story));
+                allStoriesWithParents.AddRange(FlattenStoryWithParent(story, null));
             }
 
             // Convert stories to DTOs
-            foreach (var story in allStories)
+            foreach (var (story, parent) in allStoriesWithParents)
             {
-                request.Stories.Add(ConvertToStoryDto(story));
+                request.Stories.Add(ConvertToStoryDto(story, parent));
 
                 // Convert log entries to DTOs
                 foreach (var logEntry in story.Log)
@@ -155,7 +162,24 @@ namespace Story.Ext.Handlers
             }
         }
 
-        private StoryDto ConvertToStoryDto(IStory story)
+        private IEnumerable<(IStory story, IStory parent)> FlattenStoryWithParent(IStory story, IStory parent)
+        {
+            yield return (story, parent);
+
+            if (story.Children != null)
+            {
+                foreach (var child in story.Children)
+                {
+                    foreach (var descendant in FlattenStoryWithParent(child, story))
+                    {
+                        yield return descendant;
+                    }
+                }
+            }
+        }
+
+        // Parent is passed since in the story it'll be null once the story is stopped
+        private StoryDto ConvertToStoryDto(IStory story, IStory parent)
         {
             var dto = new StoryDto
             {
@@ -163,7 +187,7 @@ namespace Story.Ext.Handlers
                 Name = story.Name,
                 StartedAt = story.StartDateTime,
                 DurationMs = (long?)story.Elapsed.TotalMilliseconds,
-                ParentInstanceId = story.Parent != null ? story.Parent.InstanceId : null,
+                ParentInstanceId = parent != null ? parent.InstanceId : null,
                 Status = story.Status,
                 ThreadName = story.ThreadName,
                 FilePath = story.FilePath,
@@ -177,7 +201,10 @@ namespace Story.Ext.Handlers
             {
                 try
                 {
-                    dto.Data[kvp.Key] = kvp.Value;
+                    if (kvp.Value != null)
+                    {
+                        dto.Data[kvp.Key] = SerializeValue(kvp.Value);
+                    }
                 }
                 catch
                 {
@@ -205,6 +232,24 @@ namespace Story.Ext.Handlers
                 MethodName = logEntry.MethodName,
                 LineNumber = logEntry.LineNumber
             };
+        }
+
+        private object SerializeValue(object value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            var type = value.GetType();
+
+            // Handle primitive types and strings directly
+            if (type.IsPrimitive)
+            {
+                return value;
+            }
+
+            return value.ToString();
         }
 
     }

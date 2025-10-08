@@ -127,12 +127,6 @@ namespace Story.Core
                 this.Attach();
             }
 
-            // Update name if has parent
-            if (Parent != null)
-            {
-                this.Name = this.Parent.Name + "/" + this.Name;
-            }
-
             // Capture thread name
             var currentThread = System.Threading.Thread.CurrentThread;
             this.ThreadName = !string.IsNullOrEmpty(currentThread.Name)
