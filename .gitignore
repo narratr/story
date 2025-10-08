@@ -15,3 +15,6 @@ _ReSharper.*
 *.dotsettings
 !*.proj
 *.nupkg
+
+.vs/
+.claude
