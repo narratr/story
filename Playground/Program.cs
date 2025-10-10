@@ -5,6 +5,7 @@ using Story.Core.Rules;
 using Story.Core.Utils;
 using Story.Ext.Handlers;
 using Story.Examples.Scenarios;
+using Story.Core.Handlers;
 
 namespace Story.Examples
 {
@@ -51,12 +52,13 @@ namespace Story.Examples
 
                 // Create the handler
                 var storyLogStoreHandler = new StoryLogStoreHandler("StoryLogStore", config);
+                var handler = new CompositeHandler("Handler", new ConsoleHandler("Console", StoryFormatters.GetCompactStoryFormatter(LogSeverity.Debug)), storyLogStoreHandler);
 
                 // Add the handler to the factory's ruleset
                 Storytelling.Factory.GetRuleset().Rules.Add(
                     new PredicateRule(
                         story => story.IsRoot(), // Apply to root stories
-                        story => storyLogStoreHandler));
+                        story => handler));
 
                 Console.WriteLine("StoryLogStore handler configured successfully.");
                 Console.WriteLine("API URL: {0}", config.ApiBaseUrl);

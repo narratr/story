@@ -167,7 +167,7 @@ namespace Story.Examples.Scenarios
                     Storytelling.Data["sharedCounter"] = counter + 1;
                     Storytelling.Info($"Child 1 updated shared counter to: {Storytelling.Data["sharedCounter"]}");
                 }
-                
+
                 // Child 2
                 using (var child2 = Storytelling.StartNew("Child2"))
                 {

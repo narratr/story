@@ -57,6 +57,7 @@
     <Compile Include="Utils\FileWatcher.cs" />
     <Compile Include="Handlers\ActionHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
+    <Compile Include="Handlers\CompactStoryFormatter.cs" />
     <Compile Include="Handlers\IStoryFormatter.cs" />
     <Compile Include="Handlers\StoryFormatters.cs" />
     <Compile Include="Handlers\StoryHandlerBase.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Utils\InstanceIdGenerator.cs" />
     <Compile Include="Utils\JsonExtensions.cs" />
     <Compile Include="Utils\Retrier.cs" />
+    <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

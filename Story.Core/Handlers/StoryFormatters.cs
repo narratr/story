@@ -11,5 +11,14 @@ namespace Story.Core.Handlers
         {
             return new DelimiterStoryFormatter(severityThreshold);
         }
+
+        public static CompactStoryFormatter GetCompactStoryFormatter(LogSeverity severityThreshold = LogSeverity.Info, 
+                                                                      bool includeHierarchy = true, 
+                                                                      bool includeData = true, 
+                                                                      bool includeLogs = true,
+                                                                      int maxEventsPerPart = 10)
+        {
+            return new CompactStoryFormatter(severityThreshold, includeHierarchy, includeData, includeLogs, maxEventsPerPart);
+        }
     }
 }

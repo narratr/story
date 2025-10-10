@@ -58,7 +58,7 @@
             }
             catch (Exception exception)
             {
-                story.Data["exception"] = exception;
+                story.ReportFailed(exception);
                 throw;
             }
             finally
@@ -91,7 +91,7 @@
             }
             catch (Exception exception)
             {
-                story.Data["exception"] = exception;
+                story.ReportFailed(exception);
                 throw;
             }
             finally
@@ -321,36 +321,6 @@
             }
         }
 
-        private static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
-        {
-            Ensure.ArgumentNotNull(source, "source");
-            Ensure.ArgumentNotNull(childrenSelector, "childrenSelector");
-
-            LinkedList<T> list = new LinkedList<T>(source);
-
-            while (list.Count > 0)
-            {
-                var item = list.First.Value;
-
-                yield return item;
-
-                list.RemoveFirst();
-
-                var node = list.First;
-                foreach (var child in childrenSelector(item))
-                {
-                    if (node != null)
-                    {
-                        list.AddBefore(node, child);
-                    }
-                    else
-                    {
-                        list.AddLast(child);
-                    }
-                }
-            }
-        }
-
         private static void Stop(this IStory story, Task task)
         {
             Ensure.ArgumentNotNull(story, "story");
@@ -359,8 +329,29 @@
             story.Task = task;
             story.Stop();
         }
-    }
 
+        /// <summary>
+        /// Report a failure for the story with an exception.
+        /// Sets the story status to Failed and stores the exception details in the story data.
+        /// </summary>
+        public static void ReportFailed(this IStory story, Exception exception)
+        {
+            story.Log.Debug($"Story failed with: {exception}");
+            story.Data["error"] = exception;
+            story.ReportFailed();
+        }
+
+        /// <summary>
+        /// Report a failure for the story with an error.
+        /// Sets the story status to Failed and stores the exception details in the story data.
+        /// </summary>
+        public static void ReportFailed(this IStory story, string errorMessage)
+        {
+            story.Log.Debug($"Story failed with: {errorMessage}");
+            story.Data["error"] = errorMessage;
+            story.ReportFailed();
+        }
+    }
     public class StoryDataValue
     {
         public StoryDataValue(IStory story, object value)

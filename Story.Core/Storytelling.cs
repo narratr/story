@@ -148,9 +148,7 @@ namespace Story.Core
         /// </summary>
         public static void ReportFailed(Exception exception)
         {
-            var story = Current;
-            story.ReportFailed();
-            story.Data["error"] = exception;
+            Current.ReportFailed(exception);
         }
 
         /// <summary>
@@ -159,9 +157,7 @@ namespace Story.Core
         /// </summary>
         public static void ReportFailed(string errorMessage)
         {
-            var story = Current;
-            story.ReportFailed();
-            story.Data["error"] = errorMessage;
+            Current.ReportFailed(errorMessage);
         }
 
         public static IStoryData Data
