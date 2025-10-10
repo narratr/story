@@ -5,11 +5,11 @@
     <version>$version$</version>
     <authors>amitapl,ichen</authors>
     <owners>amitapl,ichen</owners>
-    <licenseUrl>https://raw.githubusercontent.com/narratr/story/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/narratr/story</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A rule-based, contextual logging and telemetry framework for .NET.</description>
-    <copyright>Copyright 2015</copyright>
+    <description>A rule-based, contextual logging and telemetry framework for .NET extension pack.</description>
+    <copyright>Copyright 2025</copyright>
     <tags>Logs Telemetry Analytics Events</tags>
   </metadata>
 </package>
