@@ -52,7 +52,7 @@ namespace Story.Examples
 
                 // Create the handler
                 var storyLogStoreHandler = new StoryLogStoreHandler("StoryLogStore", config);
-                var handler = new CompositeHandler("Handler", new ConsoleHandler("Console", StoryFormatters.GetCompactStoryFormatter(LogSeverity.Debug)), storyLogStoreHandler);
+                var handler = new ConsoleHandler("Console", StoryFormatters.GetCompactStoryFormatter(LogSeverity.Debug)).Compose(storyLogStoreHandler);
 
                 // Add the handler to the factory's ruleset
                 Storytelling.Factory.GetRuleset().Rules.Add(

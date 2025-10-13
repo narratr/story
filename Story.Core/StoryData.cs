@@ -26,7 +26,7 @@
         {
             get
             {
-                Ensure.ArgumentNotEmpty(key, "key");
+                if (key == null) return null; // Ignore null keys
 
                 object result;
                 return this.entries.TryGetValue(key, out result) ? result : null;
@@ -34,7 +34,7 @@
 
             set
             {
-                Ensure.ArgumentNotEmpty(key, "key");
+                if (key == null) return; // Ignore null keys
 
                 if (!IgnoreDuplicates && this.entries.ContainsKey(key))
                 {

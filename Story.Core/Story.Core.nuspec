@@ -7,9 +7,13 @@
     <owners>amitapl,ichen</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/narratr/story</projectUrl>
+    <readme>docs\readme.md</readme>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A rule-based, contextual logging and telemetry framework for .NET (Core)</description>
     <copyright>Copyright 2025</copyright>
     <tags>Logs Telemetry Analytics Events</tags>
   </metadata>
+  <files>
+    <file src="readme.md" target="docs\" />
+  </files>
 </package>
