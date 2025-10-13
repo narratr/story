@@ -23,7 +23,7 @@ namespace Story.Core
         /// <param name="instanceId">The instance identifier.</param>
         protected ContextBoundObject()
         {
-            this.InstanceId = InstanceIdGenerator.GenerateInstanceId("OBJ");
+            this.InstanceId = InstanceIdGenerator.GenerateInstanceId("ST");
         }
 
         /// <summary>

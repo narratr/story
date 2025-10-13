@@ -322,7 +322,7 @@ namespace Story.Core
                 this.log = new OneTimeStoryLog(this);
                 this.data = new OneTimeStoryData(this);
                 this.Name = "OneTimeStory";
-                this.InstanceId = InstanceIdGenerator.GenerateInstanceId("OneTimeStory");
+                this.InstanceId = InstanceIdGenerator.GenerateInstanceId("OTS");
                 this.StartDateTime = DateTime.UtcNow;
                 this.Status = StoryStatus.Running;
                 this.ThreadName = System.Threading.Thread.CurrentThread.ManagedThreadId.ToString();
