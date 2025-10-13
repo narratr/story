@@ -1,4 +1,5 @@
-﻿using Story.Core.Handlers;
+﻿using Newtonsoft.Json;
+using Story.Core.Handlers;
 using Story.Core.Rules;
 using Story.Core.Utils;
 using System;
@@ -23,7 +24,13 @@ namespace Story.Core
                     story => StoryHandlers.DefaultTraceHandler));
 
             Factory = new BasicStoryFactory(ruleset);
+            Limits = new StoryLimits(); // Initialize with default limits
         }
+
+        /// <summary>
+        /// Gets or sets the global story limits configuration for automatic rotation.
+        /// </summary>
+        public static StoryLimits Limits { get; set; }
 
         public static IStory Current
         {
@@ -339,6 +346,10 @@ namespace Story.Core
             public string MethodName { get; set; }
             public int? LineNumber { get; set; }
 
+            // Rotation info - OneTimeStory never rotates, so always null
+            [JsonIgnore]
+            public StoryRotationInfo RotationInfo { get { return null; } }
+
             public IRuleset<IStory, IStoryHandler> HandlerProvider
             {
                 get { return this.handlerProvider; }
@@ -551,6 +562,10 @@ namespace Story.Core
             public string MethodName { get; set; }
 
             public int? LineNumber { get; set; }
+
+            // Rotation info - DummyStory never rotates, so always null
+            [JsonIgnore]
+            public StoryRotationInfo RotationInfo { get { return null; } }
 
             public void Start()
             {

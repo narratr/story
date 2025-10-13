@@ -140,5 +140,12 @@ namespace Story.Core
         /// Gets the line number where the story was created.
         /// </summary>
         int? LineNumber { get; }
+
+        /// <summary>
+        /// Gets rotation information if this story is a continuation after rotation.
+        /// Null for original stories. JsonIgnore attribute should be applied in implementations.
+        /// </summary>
+        [JsonIgnore]
+        StoryRotationInfo RotationInfo { get; }
     }
 }

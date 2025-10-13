@@ -76,12 +76,16 @@
     <Compile Include="Story.cs" />
     <Compile Include="StoryData.cs" />
     <Compile Include="StoryExtensions.cs" />
+    <Compile Include="StoryLimits.cs" />
     <Compile Include="StoryLog.cs" />
     <Compile Include="StoryLogEntry.cs" />
+    <Compile Include="StoryRotationInfo.cs" />
+    <Compile Include="RootStoryState.cs" />
     <Compile Include="Utils\Ensure.cs" />
     <Compile Include="Utils\InstanceIdGenerator.cs" />
     <Compile Include="Utils\JsonExtensions.cs" />
     <Compile Include="Utils\Retrier.cs" />
+    <Compile Include="Utils\StoryRotationHelper.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -18,6 +18,13 @@ namespace Story.Core
         private readonly IStoryLog log;
         private readonly IStoryData data;
 
+        // Direct reference to root story for O(1) access
+        private Story _rootStory;
+
+        // Shared state for root story tracking (rotation counters and metadata)
+        // All stories in a hierarchy share the same RootStoryState instance
+        internal RootStoryState _rootState;
+
         public Story(string name, IRuleset<IStory, IStoryHandler> handlerProvider, bool notInContext = false,
             string callerMemberName = null, string callerFilePath = null, int? callerLineNumber = null)
         {
@@ -36,6 +43,12 @@ namespace Story.Core
 
             // Store the full file path
             this.FilePath = callerFilePath;
+
+            // Initially, this story is its own root (will be updated if attached to parent)
+            this._rootStory = this;
+
+            // Allocate root state for this story (will be shared with children when they attach)
+            this._rootState = new RootStoryState();
         }
 
         public string Name
@@ -118,6 +131,63 @@ namespace Story.Core
         {
             get;
             private set;
+        }
+
+        [JsonIgnore]
+        public StoryRotationInfo RotationInfo
+        {
+            get { return this._rootState?.RotationInfo; }
+        }
+
+        /// <summary>
+        /// Gets the current descendant count for this story's hierarchy.
+        /// </summary>
+        public int DescendantCount
+        {
+            get { return this._rootState?.DescendantCount ?? 0; }
+        }
+
+        /// <summary>
+        /// Gets the current total log count for this story's hierarchy.
+        /// </summary>
+        public int TotalLogCount
+        {
+            get { return this._rootState?.TotalLogCount ?? 0; }
+        }
+
+        /// <summary>
+        /// Increments the descendant count atomically on the root story state.
+        /// </summary>
+        internal void IncrementDescendantCount()
+        {
+            this._rootState?.IncrementDescendantCount();
+        }
+
+        /// <summary>
+        /// Increments the total log count atomically on the root story state.
+        /// </summary>
+        internal void IncrementLogCount()
+        {
+            this._rootState?.IncrementLogCount();
+        }
+
+        /// <summary>
+        /// Gets the root story in the hierarchy.
+        /// </summary>
+        internal Story GetRootStory()
+        {
+            return this._rootStory;
+        }
+
+        /// <summary>
+        /// Sets the root story reference and shares the root state. Called when attaching to a parent.
+        /// </summary>
+        internal void SetRootStory(Story rootStory)
+        {
+            this._rootStory = rootStory;
+
+            // Share the root story's state (for counters and rotation info)
+            this._rootState = rootStory._rootState;
         }
 
         public void Start()

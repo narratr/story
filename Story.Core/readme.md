@@ -265,7 +265,8 @@ Story framework and web applications are  made for each other, you can encapsula
 * **Log** - The logs of this story
 * **Children** - (Sub)stories of this story
 * **Parent** - The parent of this story (null if this is a root story)
-* **HandlerProvider** - The ruleset that will run when the story starts/stops.
+* **HandlerProvider** - The ruleset that will run when the story starts/stops
+* **RotationInfo** - Information about story rotation/continuation (null for original stories, contains Sequence, OriginInstanceId, Reason, and RootStoryName for continuation stories)
 
 ### Substories
 
@@ -275,7 +276,7 @@ Whenever you start a new story and there is already a story in the context, the 
 
 ```csharp
     ruleset.Rules.Add(
-        new PredicateRule( 
+        new PredicateRule(
             story => story.IsRoot(), // run only on the root story
             story => StoryHandlers.DefaultConsoleHandler));
 ```
@@ -285,9 +286,64 @@ One scenario that a substory opens is having a (sub)story for an internal operat
 ```csharp
     var traceHandler = new TraceHandler("RunQueryTooLong");
     ruleset.Rules.Add(
-        new PredicateRule( 
+        new PredicateRule(
             story => story.Name == "RunQuery" && story.Elapsed.TotalMilliseconds > 5000,
             story => traceHandler));
+```
+
+### Automatic Story Rotation
+
+To prevent unbounded memory growth from long-running stories with many child stories or log entries, the framework supports automatic story rotation. When a root story exceeds configured limits, it is automatically stopped and a new continuation story is created.
+
+**Configuration:**
+
+```csharp
+// Configure global limits (typically in application startup)
+Storytelling.Limits.MaxDescendantCount = 200;   // Max child stories (default: 200)
+Storytelling.Limits.MaxLogEntriesCount = 1000;  // Max log entries (default: 1000)
+Storytelling.Limits.EnableAutoRotation = true;  // Enable rotation (default: true)
+```
+
+**How it works:**
+
+- Each story maintains a direct reference to its root story for O(1) access
+- Limits are checked when creating child stories or adding log entries
+- When a limit is exceeded, the old root story is stopped and its handlers are called
+- A new continuation story is created with a suffix like "[Cont. 1]", "[Cont. 2]", etc.
+- The new story becomes the current story in the context
+- Rotation is thread-safe and prevents recursive rotation checks
+
+**Rotation metadata:**
+
+Continuation stories have a `RotationInfo` property (null for original stories) containing:
+
+- **Sequence** - The continuation number (1, 2, 3, etc.)
+- **OriginInstanceId** - The instance ID of the original root story
+- **Reason** - Why rotation occurred ("MaxDescendants" or "MaxLogs")
+- **RootStoryName** - The name of the original root story
+
+**Example:**
+
+```csharp
+using (var rootStory = Storytelling.StartNew("LongRunningProcess"))
+{
+    // After 200 children, rotation occurs automatically
+    for (int i = 0; i < 500; i++)
+    {
+        using (var child = Storytelling.StartNew($"Child_{i}"))
+        {
+            Storytelling.Info($"Processing item {i}");
+
+            // Check if we're in a continuation story
+            var current = Storytelling.Current;
+            if (current.RotationInfo != null)
+            {
+                Console.WriteLine($"Continuation #{current.RotationInfo.Sequence}");
+                Console.WriteLine($"Reason: {current.RotationInfo.Reason}");
+            }
+        }
+    }
+}
 ```
 
 ### Story Extensions

@@ -118,6 +118,66 @@ namespace Story.Examples
             ErrorScenarios.RunErrorDataExample();
             Console.WriteLine();
 
+            // Rotation scenarios
+            try
+            {
+                Console.WriteLine("*** Starting Max Descendants Rotation Test ***");
+                RotationScenarios.RunMaxDescendantsRotation();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*** ERROR in RunMaxDescendantsRotation ***");
+                Console.WriteLine("Exception Type: {0}", ex.GetType().FullName);
+                Console.WriteLine("Message: {0}", ex.Message);
+                Console.WriteLine("Stack Trace (first 2000 chars):");
+                var stackTrace = ex.StackTrace ?? "No stack trace";
+                Console.WriteLine(stackTrace.Substring(0, Math.Min(2000, stackTrace.Length)));
+                Console.WriteLine();
+            }
+
+            try
+            {
+                Console.WriteLine("*** Starting Max Logs Rotation Test ***");
+                RotationScenarios.RunMaxLogsRotation();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*** ERROR in RunMaxLogsRotation ***");
+                Console.WriteLine("Exception Type: {0}", ex.GetType().FullName);
+                Console.WriteLine("Message: {0}", ex.Message);
+                Console.WriteLine();
+            }
+
+            try
+            {
+                Console.WriteLine("*** Starting Nested Rotation Test ***");
+                RotationScenarios.RunNestedRotation();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*** ERROR in RunNestedRotation ***");
+                Console.WriteLine("Exception Type: {0}", ex.GetType().FullName);
+                Console.WriteLine("Message: {0}", ex.Message);
+                Console.WriteLine();
+            }
+
+            try
+            {
+                Console.WriteLine("*** Starting Rotation Disabled Test ***");
+                RotationScenarios.RunRotationDisabled();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*** ERROR in RunRotationDisabled ***");
+                Console.WriteLine("Exception Type: {0}", ex.GetType().FullName);
+                Console.WriteLine("Message: {0}", ex.Message);
+                Console.WriteLine();
+            }
+
             // Simple async scenarios
             try
             {
