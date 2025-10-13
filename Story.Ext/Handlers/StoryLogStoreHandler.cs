@@ -117,6 +117,7 @@ namespace Story.Ext.Handlers
         {
             var request = new StoryBatchRequest
             {
+                BatchData = configuration.BatchData,
                 Metadata = new BatchMetadata
                 {
                     ClientVersion = configuration.ClientVersion,

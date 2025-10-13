@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace Story.Ext.Handlers
@@ -76,5 +77,13 @@ namespace Story.Ext.Handlers
         /// Ruleset version number
         /// </summary>
         public int RulesetVersion { get; set; }
+
+        /// <summary>
+        /// Common data dictionary to be merged into all root stories in the batch.
+        /// Only applied to root stories (stories without a parent).
+        /// Individual story data values take precedence over batch data values in case of key conflicts.
+        /// Useful for adding common context like host, environment, region, or deployment information.
+        /// </summary>
+        public Dictionary<string, object> BatchData { get; set; }
     }
 }

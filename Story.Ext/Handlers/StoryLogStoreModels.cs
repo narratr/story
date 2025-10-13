@@ -42,10 +42,13 @@ namespace Story.Ext.Handlers
     {
         [JsonProperty("stories")]
         public List<StoryDto> Stories { get; set; }
-        
+
         [JsonProperty("logEntries")]
         public List<LogEntryDto> LogEntries { get; set; }
-        
+
+        [JsonProperty("batchData")]
+        public Dictionary<string, object> BatchData { get; set; }
+
         [JsonProperty("metadata")]
         public BatchMetadata Metadata { get; set; }
 

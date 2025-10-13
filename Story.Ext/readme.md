@@ -488,6 +488,48 @@ The `AzureTableStorageHandlerConfiguration` class lets you customize the followi
 
 > Note: When adding a data to a story with this handler, make sure it is (json) serializable, otherwise it'll fail.
 
+### StoryLogStoreHandler
+
+Use this story handler to send stories to the Story Log Store API for centralized storage and analysis.
+
+```csharp
+    // StoryLogStoreHandler should be created once and not per rule invocation
+    // That way it is able to buffer stories before sending them
+    var storyLogStoreHandler =
+        new StoryLogStoreHandler(
+            "StoryLogStore",
+            new StoryLogStoreHandlerConfiguration
+            {
+                ApiBaseUrl = "https://api.storylogstore.com",
+                ApiKey = "your-api-key",
+                BatchData = new Dictionary<string, object>
+                {
+                    { "host", "web-server-01" },
+                    { "environment", "production" },
+                    { "region", "us-east-1" }
+                }
+            });
+
+    ruleset.Rules.Add(
+        new PredicateRule(
+            story => story.IsRoot(),
+            story => storyLogStoreHandler));
+```
+
+The `StoryLogStoreHandlerConfiguration` class lets you customize the following:
+
+* **ApiBaseUrl** - The Story Log Store API base URL (required)
+* **ApiKey** - The API key for authentication (required)
+* **BatchSize** - Number of stories to buffer before sending (default - 200, max - 1000)
+* **BatchTimeDelay** - Time to buffer stories before sending them (default - 20 seconds)
+* **BatchData** - Common data dictionary to be merged into all root stories (optional). Only applied to root stories, and individual story data values take precedence over batch data values in case of key conflicts. Useful for adding common context like host, environment, region, or deployment information
+* **RetryCount** - Number of retry attempts on failure (default - 3)
+* **RetryTimeout** - Timeout between retries in milliseconds (default - 500)
+* **ClientVersion** - Client version string (default - "1.0.0")
+* **RulesetVersion** - Ruleset version number (default - 1)
+
+> Note: When adding data to a story with this handler, make sure it is (json) serializable, otherwise it'll fail.
+
 ## Roadmap
 
 * Making Story even easier to use.

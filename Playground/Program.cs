@@ -14,7 +14,7 @@ namespace Story.Examples
         static void Main(string[] args)
         {
             bool runPerformanceTests = false;
-            
+
             // Parse command line arguments
             for (int i = 0; i < args.Length; i++)
             {
