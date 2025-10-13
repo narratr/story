@@ -13,6 +13,17 @@ namespace Story.Examples
     {
         static void Main(string[] args)
         {
+            bool runPerformanceTests = false;
+            
+            // Parse command line arguments
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Equals("--runPerformanceTests", StringComparison.OrdinalIgnoreCase) ||
+                    args[i].Equals("-p", StringComparison.OrdinalIgnoreCase))
+                {
+                    runPerformanceTests = true;
+                }
+            }
             Console.WriteLine("=== Story Framework Examples ===");
             Console.WriteLine();
 
@@ -21,11 +32,14 @@ namespace Story.Examples
 
             try
             {
-                // Configure StoryLogStore handler
-                ConfigureStoryLogStoreHandler();
+                if (!runPerformanceTests)
+                {
+                    // Configure StoryLogStore handler
+                    ConfigureStoryLogStoreHandler();
+                }
 
                 // Run all example scenarios
-                RunAllScenarios();
+                RunAllScenarios(runPerformanceTests);
 
                 Console.WriteLine();
                 Console.WriteLine("=== All Examples Completed Successfully ===");
@@ -74,10 +88,18 @@ namespace Story.Examples
             }
         }
 
-        private static void RunAllScenarios()
+        private static void RunAllScenarios(bool runPerformanceTests)
         {
+            if (runPerformanceTests)
+            {
+                // Performance measurements only
+                Console.WriteLine();
+                PerformanceScenarios.RunAllPerformanceTests();
+                return;
+            }
+
             // Basic scenarios
-            BasicScenarios.RunLoggingExample();
+                BasicScenarios.RunLoggingExample();
             Console.WriteLine();
             
             BasicScenarios.RunDataExample();

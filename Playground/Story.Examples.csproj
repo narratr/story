@@ -55,6 +55,7 @@
     <Compile Include="Scenarios\ErrorScenarios.cs" />
     <Compile Include="Scenarios\AsyncScenarios.cs" />
     <Compile Include="Scenarios\RotationScenarios.cs" />
+    <Compile Include="Scenarios\PerformanceScenarios.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
