@@ -1,3 +1,4 @@
+using Story.Core;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -85,5 +86,12 @@ namespace Story.Ext.Handlers
         /// Useful for adding common context like host, environment, region, or deployment information.
         /// </summary>
         public Dictionary<string, object> BatchData { get; set; }
+
+        /// <summary>
+        /// Minimum log severity level for logs to be sent to Story Log Store.
+        /// Logs below this severity will be filtered out.
+        /// Default is Debug (all logs are sent).
+        /// </summary>
+        public LogSeverity MinimumLogSeverity { get; set; } = LogSeverity.Debug;
     }
 }

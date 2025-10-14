@@ -485,6 +485,7 @@ The `AzureTableStorageHandlerConfiguration` class lets you customize the followi
 * **BatchTimeDelay** - Time to buffer stories before sending them (default - 5 seconds)
 * **ConnectionString** - The Azure Storage connection string (default - from your configuration connection string named "StoryTableStorage", this is what the ui will use when looking for the stories)
 * **TableName** - The table name (default - "Stories")
+* **MinimumLogSeverity** - Minimum log severity level for logs to be stored (default - Debug, which includes all logs). Logs below this severity will be filtered out. Note: Currently logs are stored as part of the serialized story JSON, so this property is available but full filtering support may require additional implementation (**not working yet**)
 
 > Note: When adding a data to a story with this handler, make sure it is (json) serializable, otherwise it'll fail.
 
@@ -523,10 +524,29 @@ The `StoryLogStoreHandlerConfiguration` class lets you customize the following:
 * **BatchSize** - Number of stories to buffer before sending (default - 200, max - 1000)
 * **BatchTimeDelay** - Time to buffer stories before sending them (default - 20 seconds)
 * **BatchData** - Common data dictionary to be merged into all root stories (optional). Only applied to root stories, and individual story data values take precedence over batch data values in case of key conflicts. Useful for adding common context like host, environment, region, or deployment information
+* **MinimumLogSeverity** - Minimum log severity level for logs to be sent (default - Debug, which includes all logs). Logs below this severity will be filtered out. Useful for reducing payload size and API costs by only sending important logs (e.g., Warning and above)
 * **RetryCount** - Number of retry attempts on failure (default - 3)
 * **RetryTimeout** - Timeout between retries in milliseconds (default - 500)
 * **ClientVersion** - Client version string (default - "1.0.0")
 * **RulesetVersion** - Ruleset version number (default - 1)
+
+**Example with log filtering:**
+```csharp
+    // Only send Warning, Error, and Critical logs to reduce API costs
+    var storyLogStoreHandler =
+        new StoryLogStoreHandler(
+            "StoryLogStore",
+            new StoryLogStoreHandlerConfiguration
+            {
+                ApiBaseUrl = "https://api.storylogstore.com",
+                ApiKey = "your-api-key",
+                MinimumLogSeverity = LogSeverity.Warning,
+                BatchData = new Dictionary<string, object>
+                {
+                    { "environment", "production" }
+                }
+            });
+```
 
 > Note: When adding data to a story with this handler, make sure it is (json) serializable, otherwise it'll fail.
 

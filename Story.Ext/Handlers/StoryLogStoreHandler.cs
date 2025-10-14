@@ -20,7 +20,7 @@ namespace Story.Ext.Handlers
         private readonly string url;
 
         public StoryLogStoreHandler(string name, StoryLogStoreHandlerConfiguration configuration)
-            : base(name, configuration.BatchTimeDelay, configuration.BatchSize)
+            : base(name, configuration.BatchTimeDelay, configuration.BatchSize, configuration.MinimumLogSeverity)
         {
             if (configuration == null)
             {
@@ -137,8 +137,8 @@ namespace Story.Ext.Handlers
             {
                 request.Stories.Add(ConvertToStoryDto(story, parent));
 
-                // Convert log entries to DTOs
-                foreach (var logEntry in story.Log)
+                // Convert log entries to DTOs (filtered by severity)
+                foreach (var logEntry in FilterLogsBySeverity(story.Log))
                 {
                     request.LogEntries.Add(ConvertToLogEntryDto(story, logEntry));
                 }

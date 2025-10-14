@@ -15,7 +15,7 @@ namespace Story.Ext.Handlers
         private TableClient storiesTable;
 
         public AzureTableStorageHandler(string name, AzureTableStorageHandlerConfiguration configuration)
-            : base(name, configuration.BatchTimeDelay, configuration.BatchSize)
+            : base(name, configuration.BatchTimeDelay, configuration.BatchSize, configuration.MinimumLogSeverity)
         {
             this.configuration = configuration;
 
@@ -43,6 +43,7 @@ namespace Story.Ext.Handlers
             var tableEntities = new List<StoryTableEntity>();
             foreach (var story in stories)
             {
+                // TODO: Utilize FilterLogsBySeverity to filter out logs below the minimum log severity
                 tableEntities.Add(StoryTableEntity.ToStoryTableEntity(story));
             }
 

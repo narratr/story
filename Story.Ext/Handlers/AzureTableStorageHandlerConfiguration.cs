@@ -1,3 +1,4 @@
+using Story.Core;
 using System;
 using System.Configuration;
 
@@ -27,5 +28,12 @@ namespace Story.Ext.Handlers
         public string ConnectionString { get; set; }
 
         public string TableName { get; set; }
+
+        /// <summary>
+        /// Minimum log severity level for logs to be stored in Azure Table Storage.
+        /// Logs below this severity will be filtered out.
+        /// Default is Debug (all logs are stored).
+        /// </summary>
+        public LogSeverity MinimumLogSeverity { get; set; } = LogSeverity.Debug;
     }
 }
