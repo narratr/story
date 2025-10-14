@@ -24,13 +24,13 @@ namespace Story.Core
                     story => StoryHandlers.DefaultTraceHandler));
 
             Factory = new BasicStoryFactory(ruleset);
-            Limits = new StoryLimits(); // Initialize with default limits
+            Configuration = new StoryConfiguration(); // Initialize with default configuration
         }
 
         /// <summary>
-        /// Gets or sets the global story limits configuration for automatic rotation.
+        /// Gets or sets the global story configuration including rotation limits and log filtering.
         /// </summary>
-        public static StoryLimits Limits { get; set; }
+        public static StoryConfiguration Configuration { get; set; }
 
         public static IStory Current
         {

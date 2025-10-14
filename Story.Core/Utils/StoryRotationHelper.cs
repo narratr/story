@@ -26,27 +26,27 @@ namespace Story.Core.Utils
         /// Checks if the given root story should be rotated based on configured limits.
         /// </summary>
         /// <param name="rootStory">The root story to check.</param>
-        /// <param name="limits">The configured limits.</param>
+        /// <param name="configuration">The story configuration including limits.</param>
         /// <param name="reason">Output parameter containing the reason for rotation if true is returned.</param>
         /// <returns>True if rotation should occur, false otherwise.</returns>
-        public static bool ShouldRotate(Story rootStory, StoryLimits limits, out string reason)
+        public static bool ShouldRotate(Story rootStory, StoryConfiguration configuration, out string reason)
         {
             reason = null;
 
-            if (rootStory == null || limits == null || !limits.EnableAutoRotation)
+            if (rootStory == null || configuration == null || !configuration.EnableAutoRotation)
             {
                 return false;
             }
 
             // Check descendant count
-            if (rootStory.DescendantCount >= limits.MaxDescendantCount)
+            if (rootStory.DescendantCount >= configuration.MaxDescendantCount)
             {
                 reason = "MaxDescendants";
                 return true;
             }
 
             // Check log entry count
-            if (rootStory.TotalLogCount >= limits.MaxLogEntriesCount)
+            if (rootStory.TotalLogCount >= configuration.MaxLogEntriesCount)
             {
                 reason = "MaxLogs";
                 return true;

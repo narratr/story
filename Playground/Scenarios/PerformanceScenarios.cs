@@ -70,10 +70,10 @@ namespace Story.Examples.Scenarios
         private static long MeasureMemorySingleStory()
         {
             // Disable rotation for clean measurement
-            var originalMaxLogs = Storytelling.Limits.MaxLogEntriesCount;
-            var originalMaxDesc = Storytelling.Limits.MaxDescendantCount;
-            Storytelling.Limits.MaxLogEntriesCount = 10000;
-            Storytelling.Limits.MaxDescendantCount = 10000;
+            var originalMaxLogs = Storytelling.Configuration.MaxLogEntriesCount;
+            var originalMaxDesc = Storytelling.Configuration.MaxDescendantCount;
+            Storytelling.Configuration.MaxLogEntriesCount = 10000;
+            Storytelling.Configuration.MaxDescendantCount = 10000;
 
             ForceGC();
 
@@ -89,8 +89,8 @@ namespace Story.Examples.Scenarios
             ForceGC();
 
             // Restore limits
-            Storytelling.Limits.MaxLogEntriesCount = originalMaxLogs;
-            Storytelling.Limits.MaxDescendantCount = originalMaxDesc;
+            Storytelling.Configuration.MaxLogEntriesCount = originalMaxLogs;
+            Storytelling.Configuration.MaxDescendantCount = originalMaxDesc;
 
             return memory;
         }
@@ -98,10 +98,10 @@ namespace Story.Examples.Scenarios
         private static long MeasureMemorySmallHierarchy()
         {
             // Disable rotation for clean measurement
-            var originalMaxLogs = Storytelling.Limits.MaxLogEntriesCount;
-            var originalMaxDesc = Storytelling.Limits.MaxDescendantCount;
-            Storytelling.Limits.MaxLogEntriesCount = 10000;
-            Storytelling.Limits.MaxDescendantCount = 10000;
+            var originalMaxLogs = Storytelling.Configuration.MaxLogEntriesCount;
+            var originalMaxDesc = Storytelling.Configuration.MaxDescendantCount;
+            Storytelling.Configuration.MaxLogEntriesCount = 10000;
+            Storytelling.Configuration.MaxDescendantCount = 10000;
 
             ForceGC();
 
@@ -131,8 +131,8 @@ namespace Story.Examples.Scenarios
             ForceGC();
 
             // Restore limits
-            Storytelling.Limits.MaxLogEntriesCount = originalMaxLogs;
-            Storytelling.Limits.MaxDescendantCount = originalMaxDesc;
+            Storytelling.Configuration.MaxLogEntriesCount = originalMaxLogs;
+            Storytelling.Configuration.MaxDescendantCount = originalMaxDesc;
 
             return memory;
         }
@@ -140,10 +140,10 @@ namespace Story.Examples.Scenarios
         private static long MeasureMemoryLargeScale()
         {
             // Disable rotation for clean measurement
-            var originalMaxLogs = Storytelling.Limits.MaxLogEntriesCount;
-            var originalMaxDesc = Storytelling.Limits.MaxDescendantCount;
-            Storytelling.Limits.MaxLogEntriesCount = 100000;
-            Storytelling.Limits.MaxDescendantCount = 100000;
+            var originalMaxLogs = Storytelling.Configuration.MaxLogEntriesCount;
+            var originalMaxDesc = Storytelling.Configuration.MaxDescendantCount;
+            Storytelling.Configuration.MaxLogEntriesCount = 100000;
+            Storytelling.Configuration.MaxDescendantCount = 100000;
 
             ForceGC();
 
@@ -182,8 +182,8 @@ namespace Story.Examples.Scenarios
             ForceGC();
 
             // Restore limits
-            Storytelling.Limits.MaxLogEntriesCount = originalMaxLogs;
-            Storytelling.Limits.MaxDescendantCount = originalMaxDesc;
+            Storytelling.Configuration.MaxLogEntriesCount = originalMaxLogs;
+            Storytelling.Configuration.MaxDescendantCount = originalMaxDesc;
 
             return memory;
         }
@@ -191,11 +191,11 @@ namespace Story.Examples.Scenarios
         private static void MeasureMemoryWithRotation()
         {
             // Configure limits for rotation
-            var originalMaxDescendants = Storytelling.Limits.MaxDescendantCount;
-            var originalAutoRotation = Storytelling.Limits.EnableAutoRotation;
+            var originalMaxDescendants = Storytelling.Configuration.MaxDescendantCount;
+            var originalAutoRotation = Storytelling.Configuration.EnableAutoRotation;
 
-            Storytelling.Limits.MaxDescendantCount = 200;
-            Storytelling.Limits.EnableAutoRotation = true;
+            Storytelling.Configuration.MaxDescendantCount = 200;
+            Storytelling.Configuration.EnableAutoRotation = true;
 
             ForceGC();
 
@@ -246,8 +246,8 @@ namespace Story.Examples.Scenarios
             Console.WriteLine($"  Memory after full disposal:             {afterDispose / 1024:N0} KB");
 
             // Restore original limits
-            Storytelling.Limits.MaxDescendantCount = originalMaxDescendants;
-            Storytelling.Limits.EnableAutoRotation = originalAutoRotation;
+            Storytelling.Configuration.MaxDescendantCount = originalMaxDescendants;
+            Storytelling.Configuration.EnableAutoRotation = originalAutoRotation;
         }
 
         private static void RunCpuTests()
@@ -326,8 +326,8 @@ namespace Story.Examples.Scenarios
         private static long MeasureRotationCheck()
         {
             // Disable rotation to isolate check overhead
-            var originalAutoRotation = Storytelling.Limits.EnableAutoRotation;
-            Storytelling.Limits.EnableAutoRotation = false;
+            var originalAutoRotation = Storytelling.Configuration.EnableAutoRotation;
+            Storytelling.Configuration.EnableAutoRotation = false;
 
             using (var story = Storytelling.StartNew("RotationCheckTest"))
             {
@@ -338,15 +338,15 @@ namespace Story.Examples.Scenarios
                 }
                 sw.Stop();
 
-                Storytelling.Limits.EnableAutoRotation = originalAutoRotation;
+                Storytelling.Configuration.EnableAutoRotation = originalAutoRotation;
                 return sw.ElapsedMilliseconds;
             }
         }
 
         private static double MeasureRotationExecution()
         {
-            var originalMaxDescendants = Storytelling.Limits.MaxDescendantCount;
-            Storytelling.Limits.MaxDescendantCount = 50;
+            var originalMaxDescendants = Storytelling.Configuration.MaxDescendantCount;
+            Storytelling.Configuration.MaxDescendantCount = 50;
 
             var rotationTimes = new List<long>();
 
@@ -369,7 +369,7 @@ namespace Story.Examples.Scenarios
                 }
             }
 
-            Storytelling.Limits.MaxDescendantCount = originalMaxDescendants;
+            Storytelling.Configuration.MaxDescendantCount = originalMaxDescendants;
 
             // Return average of top measurements (likely rotation operations)
             if (rotationTimes.Any())

@@ -77,6 +77,12 @@
             [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null,
             [System.Runtime.CompilerServices.CallerLineNumber] int? callerLineNumber = null)
         {
+            // Check global minimum log severity - don't create logs below threshold
+            if (severity < Storytelling.Configuration.MinimumLogSeverity)
+            {
+                return;
+            }
+
             string text = args != null && args.Length > 0 ? string.Format(format, args) : format;
 
             // Get the current story and check for rotation
@@ -95,7 +101,7 @@
                     if (!Utils.StoryRotationHelper.IsRotating)
                     {
                         // Check if rotation is needed
-                        var limits = Storytelling.Limits;
+                        var limits = Storytelling.Configuration;
                         string reason;
                         if (Utils.StoryRotationHelper.ShouldRotate(rootStory, limits, out reason))
                         {

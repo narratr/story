@@ -148,12 +148,12 @@ namespace Story.Core
                 return existingContext;
             }
 
-            // Get limits from Storytelling
-            var limits = Storytelling.Limits;
+            // Get configuration from Storytelling
+            var configuration = Storytelling.Configuration;
 
             // Check if rotation is needed
             string reason;
-            if (Utils.StoryRotationHelper.ShouldRotate(rootStory, limits, out reason))
+            if (Utils.StoryRotationHelper.ShouldRotate(rootStory, configuration, out reason))
             {
                 // Perform rotation with the reason - returns new root story
                 var newRootStory = Utils.StoryRotationHelper.RotateStory(rootStory, reason);

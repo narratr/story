@@ -291,18 +291,36 @@ One scenario that a substory opens is having a (sub)story for an internal operat
             story => traceHandler));
 ```
 
-### Automatic Story Rotation
+### Global Story Configuration
 
-To prevent unbounded memory growth from long-running stories with many child stories or log entries, the framework supports automatic story rotation. When a root story exceeds configured limits, it is automatically stopped and a new continuation story is created.
+The framework provides global configuration for controlling story behavior, including automatic rotation and log filtering.
 
 **Configuration:**
 
 ```csharp
-// Configure global limits (typically in application startup)
-Storytelling.Limits.MaxDescendantCount = 200;   // Max child stories (default: 200)
-Storytelling.Limits.MaxLogEntriesCount = 1000;  // Max log entries (default: 1000)
-Storytelling.Limits.EnableAutoRotation = true;  // Enable rotation (default: true)
+// Configure global settings (typically in application startup)
+Storytelling.Configuration.MaxDescendantCount = 200;        // Max child stories (default: 200)
+Storytelling.Configuration.MaxLogEntriesCount = 1000;       // Max log entries (default: 1000)
+Storytelling.Configuration.EnableAutoRotation = true;       // Enable rotation (default: true)
+Storytelling.Configuration.MinimumLogSeverity = LogSeverity.Debug;  // Minimum log level (default: Debug)
 ```
+
+#### Minimum Log Severity
+
+Control which logs are created globally using `MinimumLogSeverity`. Logs below this severity are never created, saving memory and processing:
+
+```csharp
+// Only create Info, Warning, Error, and Critical logs (no Debug logs)
+Storytelling.Configuration.MinimumLogSeverity = LogSeverity.Info;
+```
+
+This provides a two-tier filtering system:
+- **Tier 1 (Global)**: `Storytelling.Configuration.MinimumLogSeverity` prevents log creation
+- **Tier 2 (Handler)**: Individual handlers can further filter which logs they process/send
+
+#### Automatic Story Rotation
+
+To prevent unbounded memory growth from long-running stories, automatic rotation is enabled by default.
 
 **How it works:**
 

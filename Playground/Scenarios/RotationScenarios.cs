@@ -11,9 +11,9 @@ namespace Story.Examples.Scenarios
             Console.WriteLine("--- Max Descendants Rotation Example ---");
 
             // Configure lower limits for testing
-            Storytelling.Limits.MaxDescendantCount = 10;
-            Storytelling.Limits.MaxLogEntriesCount = 1000;
-            Storytelling.Limits.EnableAutoRotation = true;
+            Storytelling.Configuration.MaxDescendantCount = 10;
+            Storytelling.Configuration.MaxLogEntriesCount = 1000;
+            Storytelling.Configuration.EnableAutoRotation = true;
 
             using (var rootStory = Storytelling.StartNew("DescendantTestStory"))
             {
@@ -55,9 +55,9 @@ namespace Story.Examples.Scenarios
             Console.WriteLine("--- Max Logs Rotation Example ---");
 
             // Configure lower limits for testing
-            Storytelling.Limits.MaxDescendantCount = 1000;
-            Storytelling.Limits.MaxLogEntriesCount = 20;
-            Storytelling.Limits.EnableAutoRotation = true;
+            Storytelling.Configuration.MaxDescendantCount = 1000;
+            Storytelling.Configuration.MaxLogEntriesCount = 20;
+            Storytelling.Configuration.EnableAutoRotation = true;
 
             using (var rootStory = Storytelling.StartNew("LogTestStory"))
             {
@@ -96,9 +96,9 @@ namespace Story.Examples.Scenarios
             Console.WriteLine("--- Nested Stories with Rotation Example ---");
 
             // Configure lower limits for testing
-            Storytelling.Limits.MaxDescendantCount = 15;
-            Storytelling.Limits.MaxLogEntriesCount = 1000;
-            Storytelling.Limits.EnableAutoRotation = true;
+            Storytelling.Configuration.MaxDescendantCount = 15;
+            Storytelling.Configuration.MaxLogEntriesCount = 1000;
+            Storytelling.Configuration.EnableAutoRotation = true;
 
             using (var rootStory = Storytelling.StartNew("NestedRotationStory"))
             {
@@ -142,9 +142,9 @@ namespace Story.Examples.Scenarios
             Console.WriteLine("--- Rotation Disabled Example ---");
 
             // Disable rotation
-            Storytelling.Limits.MaxDescendantCount = 5;
-            Storytelling.Limits.MaxLogEntriesCount = 10;
-            Storytelling.Limits.EnableAutoRotation = false;
+            Storytelling.Configuration.MaxDescendantCount = 5;
+            Storytelling.Configuration.MaxLogEntriesCount = 10;
+            Storytelling.Configuration.EnableAutoRotation = false;
 
             using (var rootStory = Storytelling.StartNew("DisabledRotationStory"))
             {
@@ -167,7 +167,7 @@ namespace Story.Examples.Scenarios
             }
 
             // Re-enable rotation for other tests
-            Storytelling.Limits.EnableAutoRotation = true;
+            Storytelling.Configuration.EnableAutoRotation = true;
 
             Console.WriteLine("--- Scenario Completed ---\n");
         }

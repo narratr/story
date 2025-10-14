@@ -1,10 +1,11 @@
 namespace Story.Core
 {
     /// <summary>
-    /// Configuration class that defines limits for story rotation to prevent unbounded memory growth.
-    /// When a root story exceeds these limits, it will automatically rotate to a new continuation story.
+    /// Configuration class that defines global settings for stories including
+    /// rotation limits to prevent unbounded memory growth and log filtering.
+    /// When a root story exceeds rotation limits, it will automatically rotate to a new continuation story.
     /// </summary>
-    public class StoryLimits
+    public class StoryConfiguration
     {
         /// <summary>
         /// Gets or sets the maximum number of descendant stories (children, grandchildren, etc.)
@@ -25,13 +26,22 @@ namespace Story.Core
         public bool EnableAutoRotation { get; set; }
 
         /// <summary>
-        /// Creates a new instance with default limits.
+        /// Gets or sets the minimum log severity level for logs to be created globally.
+        /// Logs below this severity will not be created at all, saving memory and processing.
+        /// Default is Debug (all logs are created).
+        /// This provides the first tier of filtering before handler-level filtering.
         /// </summary>
-        public StoryLimits()
+        public LogSeverity MinimumLogSeverity { get; set; }
+
+        /// <summary>
+        /// Creates a new instance with default configuration values.
+        /// </summary>
+        public StoryConfiguration()
         {
             MaxDescendantCount = 200;
             MaxLogEntriesCount = 1000;
             EnableAutoRotation = true;
+            MinimumLogSeverity = LogSeverity.Debug;
         }
     }
 }
