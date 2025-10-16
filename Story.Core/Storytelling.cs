@@ -332,7 +332,7 @@ namespace Story.Core
                 this.Start();
             }
 
-            public string Name { get; private set; }
+            public string Name { get; set; }
             public string InstanceId { get; private set; }
             public Task Task { get; set; }
             public DateTime StartDateTime { get; private set; }
@@ -517,6 +517,7 @@ namespace Story.Core
                 {
                     return String.Empty;
                 }
+                set { }
             }
 
             public IRuleset<IStory, IStoryHandler> HandlerProvider

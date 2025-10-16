@@ -54,7 +54,7 @@ namespace Story.Core
         public string Name
         {
             get;
-            private set;
+            set;
         }
 
         [JsonIgnore]

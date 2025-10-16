@@ -48,7 +48,7 @@ namespace Story.Core
         /// <summary>
         /// Gets the friendly-name of the story.
         /// </summary>
-        string Name { get; }
+        string Name { get; set; }
 
         /// <summary>
         /// Gets the instance identifier of the story.
